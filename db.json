@@ -1,0 +1,104 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Amir",
+      "Email": "mirosushi1@gmail.com",
+      "password": "0147852",
+      "role": "user"
+    },
+    {
+      "id": "2",
+      "name": "Amir2",
+      "Email": "miro",
+      "password": "123456",
+      "role": "admin"
+    }
+  ],
+  "products": [
+    {
+      "id": "1",
+      "name": "iso add",
+      "decription": "Muscle Add | ISO ADD | Whey Protein | Blend of Hydrolized & Isolate whey protein | 100% whey protein ",
+      "price": 2150,
+      "image": "https://m.media-amazon.com/images/I/61nn59e-OuL._AC._SR360,460.jpg"
+    },
+    {
+      "id": "2",
+      "name": "kayy",
+      "decription": "Kayy whey protein oats with coconut flavor - 300 gm ",
+      "price": 52,
+      "image": "https://m.media-amazon.com/images/I/816-Tv-a+aL._AC._SR360,460.jpg"
+    },
+    {
+      "id": "3",
+      "name": "imtenan",
+      "decription": "Imtenan Whey protein cocoa flavor 500gm",
+      "price": 785,
+      "image": "https://m.media-amazon.com/images/I/71cau8pLAOL._AC._SR360,460.jpg"
+    },
+    {
+      "id": "4",
+      "name": "red rex",
+      "decription": " Big Whey Protein 2 kg, Chocolate",
+      "price": 2790,
+      "image": "https://m.media-amazon.com/images/I/61A7gXOae9L._AC._SR360,460.jpg"
+    },
+    {
+      "id": "5",
+      "name": "Advanced Sports",
+      "decription": "Advanced Sports Nutrition (ASN) | 100% Whey Protein | Banana",
+      "price": 1716,
+      "image": "https://m.media-amazon.com/images/I/61won-NU8FL._AC._SR360,460.jpg"
+    },
+    {
+      "id": "6",
+      "name": "Shadowhey",
+      "decription": "DY Nutrition - Shadowhey Hydrolysate, Chocolate - 2270gn",
+      "price": 4500,
+      "image": "https://m.media-amazon.com/images/I/71jtTg1yLqL._AC._SR360,460.jpg"
+    },
+    {
+      "id": "7",
+      "name": "watch me",
+      "decription": "Watchme Whey Isolate 1 Kg- Chocolate Cookies",
+      "price": 1700,
+      "image": "https://m.media-amazon.com/images/I/61BGpsrmuoL._AC._SR360,460.jpg"
+    },
+    {
+      "id": "8",
+      "name": "iso 100",
+      "decription": "ISO100 Gourmet Chocolate (2.3)",
+      "price": 4000,
+      "image": "https://m.media-amazon.com/images/I/51+AnnOIYlL._AC._SR360,460.jpg"
+    },
+    {
+      "id": "9",
+      "name": "Creatine 5000",
+      "decription": "Advanced Sports Nutrition (ASN) | Advanced Creatine 5000 | Unflavoured",
+      "price": 780,
+      "image": "https://m.media-amazon.com/images/I/51wz-Ncko9L._AC._SR360,460.jpg"
+    },
+    {
+      "id": "10",
+      "name": "chocolate protein",
+      "decription": "Challenger nutrition - 100% whey protein, chocolate, 2.276 kg",
+      "price": 2690,
+      "image": "https://m.media-amazon.com/images/I/61-l2DLSF2L._AC._SR360,460.jpg"
+    },
+    {
+      "id": "11",
+      "name": "concentrate Vanilla",
+      "decription": "Limitless Whey Protein concentrate Vanilla 30 Scoops Powder 1KG",
+      "price": 1729,
+      "image": "https://m.media-amazon.com/images/I/71vR28hTCoL._AC._SR360,460.jpg"
+    },
+    {
+      "id": "12",
+      "name": "isolate strawberry",
+      "decription": "Challenger nutrition - whey isolate, strawberry, 1.8 kg",
+      "price": 2990,
+      "image": "https://m.media-amazon.com/images/I/61hS+OyHvQL._AC._SR360,460.jpg"
+    }
+  ]
+}
