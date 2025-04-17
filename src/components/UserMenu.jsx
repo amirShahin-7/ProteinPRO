@@ -1,91 +1,67 @@
+import React, { useContext, useEffect, useState } from "react";
+import context from "../context/context";
 import {
-  Avatar,
-  Button,
   Menu,
   MenuHandler,
-  MenuItem,
   MenuList,
-  Typography,
+  MenuItem,
+  Avatar,
 } from "@material-tailwind/react";
-import {
-  PowerIcon,
-  UserCircleIcon,
-} from "@heroicons/react/24/solid";
-import React,{ useState } from "react";
-import { Link } from "react-router-dom";
+import { FiPower } from "react-icons/fi";
+import { CgProfile } from "react-icons/cg";
+import { useNavigate } from "react-router-dom";
 
-const UserMenu = ({setLogged,userInfo}) => {
-  const profileMenuItems = [
-    {
-      label: "My Profile",
-      icon: UserCircleIcon,
-    },
-    {
-      label: "Sign Out",
-      icon: PowerIcon,
-    },
-  ];
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
- 
-  const closeMenu = () => setIsMenuOpen(false);
-  const handleLogOut =() =>{
+const UserMenu = () => {
+  const navigate = useNavigate();
+  const { logged,setLogged, setUsername } = useContext(context);
+  const [userImage, setUserImage] = useState("");
+  const [username, setName] = useState("");
+
+  useEffect(() => {
+    const name = localStorage.getItem("username") || "";
+    const img = localStorage.getItem("userImage") || "";
+    setName(name);
+    setUserImage(img);
+  }, [logged]);
+
+  const handleLogout = () => {
+    localStorage.clear();
     setLogged(false);
-    localStorage.removeItem("ui");
-
+    setUsername("");
+    navigate("/login");
   };
+
   return (
-    <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
+    <Menu>
       <MenuHandler>
-        <Button
-          variant="text"
-          color="blue-gray"
-          className="flex items-center rounded-full p-0"
-        >
+        <div className="flex items-center gap-2 cursor-pointer">
           <Avatar
-            variant="circular"
-            size="md"
-            alt="tania andrew"
-            withBorder={true}
-            color="blue-gray"
-            className=" p-0.5"
-            src="https://docs.material-tailwind.com/img/face-2.jpg"
+            src={
+              userImage ||
+              "https://cdn-icons-png.flaticon.com/512/3177/3177440.png"
+            }
+            alt="avatar"
+            size="sm"
           />
-        </Button>
+          <span>{username}</span>
+        </div>
       </MenuHandler>
-      <MenuList className="p-1">
-        {profileMenuItems.map(({ label, icon }, key) => {
-          const isLastItem = key === profileMenuItems.length - 1;
-          return (
-            <MenuItem
-              key={label}
-              onClick={label == "Sign Out" && handleLogOut}
-              className={`flex items-center gap-2 rounded ${
-                isLastItem
-                  ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
-                  : ""
-              }`}
-            >
-              {React.createElement(icon, {
-                className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
-                strokeWidth: 2,
-              })}
-              <Typography
-                as="span"
-                variant="small"
-                className="font-normal"
-                color={isLastItem ? "red" : "inherit"}
-              >
-                {label}
-              </Typography>
-            </MenuItem>
-          );
-        })}
-        {userInfo?.role == "admin" && (
-         < Link className="block w-full text-center" to ="/admin">Admin</Link>
-        )}
+      <MenuList className="text-black">
+        <MenuItem onClick={() => navigate("/profile")}>
+          <div className="flex items-center gap-2">
+            <CgProfile className="text-lg" />
+            Profile
+          </div>
+        </MenuItem>
+        <MenuItem onClick={handleLogout}>
+          <div className="flex items-center gap-2">
+            <FiPower className="text-lg" />
+            Logout
+          </div>
+        </MenuItem>
       </MenuList>
     </Menu>
   );
-}
+};
 
-export default UserMenu
+export default UserMenu;

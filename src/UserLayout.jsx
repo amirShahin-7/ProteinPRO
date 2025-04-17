@@ -1,22 +1,27 @@
-import { Route, Routes } from "react-router-dom"
-import Header from "./components/Header"
-import Home from "./pages/home/Home"
-import Login from "./pages/auth/Login"
-import SignUp from "./pages/auth/SignUp"
-import Products from "./pages/products/Products"
-
-const UserLayout = ({logged,setLogged,userInfo}) => {
+import { Route, Routes } from "react-router-dom";
+import Header from "./components/Header";
+import Home from "./pages/home/Home";
+import Login from "./pages/auth/Login";
+import SignUp from "./pages/auth/SignUp";
+import Products from "./pages/product/Products";
+import Footer from "./components/Footer";
+import ProductDetails from "./pages/product/ProductDetails";
+import Profile from "./pages/Profile";
+const UserLayout = () => {
   return (
-    <div>
-      {/* <Header logged={logged} setLogged={setLogged} userInfo={userInfo}/>
+    <div className="flex flex-col min-h-screen overflow-hidden">
+      <Header />
       <Routes>
         <Route index element={<Home />} />
-        <Route path="login" element={<Login setLogged={setLogged} />} />
+        <Route path="login" element={<Login />} />
         <Route path="sign-up" element={<SignUp />} />
         <Route path="products" element={<Products />} />
-      </Routes> */}
+        <Route path="/products/:id" element={<ProductDetails />} />
+        <Route path="profile" element={<Profile />} />
+      </Routes>
+      <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default UserLayout
+export default UserLayout;
