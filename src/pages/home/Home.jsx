@@ -24,7 +24,7 @@ const Home = () => {
         className="fixed top-0 left-0 w-full h-full object-cover z-[-1]"
       >
         <source
-          src="https://cdn-user.veed.io/render/premium/93d2a5d3-21e7-44b7-9810-742395aeab5b.mp4"
+          src="bg.mp4"
           type="video/mp4"
           style={{ filter: "brightness(0.4)" }}
         />

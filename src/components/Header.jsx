@@ -3,7 +3,6 @@ import context from "../context/context";
 import { Navbar, IconButton, Collapse } from "@material-tailwind/react";
 import { FiLogIn, FiUserPlus, FiShoppingBag, FiTrash2 } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import logo from "/logo.png";
 import UserMenu from "./UserMenu";
 
 const Header = () => {
@@ -21,7 +20,7 @@ const Header = () => {
       <div className="flex items-center justify-between text-white w-full">
         <Link to="/" className="flex items-center gap-3">
           <img
-            src={logo}
+            src="logo.png"
             alt="Logo"
             className="w-10 h-10 rounded-full object-cover"
           />
