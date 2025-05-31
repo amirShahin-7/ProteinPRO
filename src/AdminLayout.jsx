@@ -5,16 +5,36 @@ import AddProduct from "./pages/admin/AddProduct";
 import Sidebar from "./components/adminHeader/Sidebar";
 import AdminUsers from "./pages/admin/AdminUsers";
 import Dashboard from "./pages/admin/Dashboard";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import context from "./context/context";
+import { Typography } from "@material-tailwind/react";
+
 const AdminLayout = () => {
   const navigate = useNavigate();
+  const { userData } = useContext(context);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const role = localStorage.getItem("role");
-    if (role !== "admin") {
-      navigate("/not-allowed");
+    if (userData !== null) {
+      setLoading(false);
+      if (!userData || userData.role !== "admin") {
+        navigate("/not-allowed");
+      }
     }
-  }, []);
+  }, [userData]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <Typography variant="h5" color="blue-gray">
+          Loading...
+        </Typography>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen">
       <Sidebar />

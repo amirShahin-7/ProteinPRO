@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import context from "../context/context";
 import {
   Menu,
@@ -13,21 +13,12 @@ import { useNavigate } from "react-router-dom";
 
 const UserMenu = () => {
   const navigate = useNavigate();
-  const { logged,setLogged, setUsername } = useContext(context);
-  const [userImage, setUserImage] = useState("");
-  const [username, setName] = useState("");
-
-  useEffect(() => {
-    const name = localStorage.getItem("username") || "";
-    const img = localStorage.getItem("userImage") || "";
-    setName(name);
-    setUserImage(img);
-  }, [logged]);
+  const { logged, setLogged, userData, setUserData } = useContext(context);
 
   const handleLogout = () => {
     localStorage.clear();
     setLogged(false);
-    setUsername("");
+    setUserData(null);
     navigate("/login");
   };
 
@@ -37,13 +28,13 @@ const UserMenu = () => {
         <div className="flex items-center gap-2 cursor-pointer">
           <Avatar
             src={
-              userImage ||
+              userData?.image ||
               "https://cdn-icons-png.flaticon.com/512/3177/3177440.png"
             }
             alt="avatar"
             size="sm"
           />
-          <span>{username}</span>
+          <span>{userData?.username || "User"}</span>
         </div>
       </MenuHandler>
       <MenuList className="text-black">

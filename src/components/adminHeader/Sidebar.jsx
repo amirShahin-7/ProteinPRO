@@ -4,7 +4,7 @@ import { FiBox, FiUsers } from "react-icons/fi";
 
 const Sidebar = () => {
   return (
-    <div className="w-64 bg-black bg-opacity-90 text-white h-screen p-4">
+    <div className="w-64 bg-black bg-opacity-90 text-white min-h-fit p-4">
       <h1 className="text-2xl font-bold mb-8">PRO GYM</h1>
       <ul className="space-y-4 text-sm">
         <li>
@@ -32,6 +32,15 @@ const Sidebar = () => {
           >
             <FiUsers className="text-lg" />
             Users
+          </Link>
+        </li>
+        <li>
+          <Link
+            to="/"
+            className="flex items-center gap-2 hover:opacity-80 transition"
+          >
+            <FiUsers className="text-lg" />
+            Home
           </Link>
         </li>
       </ul>

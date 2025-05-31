@@ -6,7 +6,7 @@ import axios from "axios";
 const Dashboard = () => {
   const navigate = useNavigate();
   const url = import.meta.env.VITE_DB_USERS;
-  const { products } = useContext(context);
+  const { products, userData } = useContext(context);
   const [users, setUsers] = useState([]);
 
   useEffect(() => {

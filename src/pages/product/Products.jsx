@@ -7,14 +7,13 @@ import {
   Button,
   Rating,
 } from "@material-tailwind/react";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import context from "../../context/context";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
 const Products = () => {
   const { products, cart, setCart } = useContext(context);
-  const [rated, setRated] = useState(4);
   const navigate = useNavigate();
 
   return (
@@ -28,23 +27,23 @@ const Products = () => {
       <h1 className="flex flex-col content-center items-center text-3xl p-3 text-blue-500">
         Our Protein
       </h1>
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-items-center px-6">
+      <div className="w-full max-w-6xl mx-auto flex flex-wrap justify-center gap-6 px-6">
         {products.map(
           ({ id, price, description, image, name, rating }, index) => (
             <Card
-              className="w-80 bg-white/80 backdrop-blur-md shadow-md"
+              className="w-64 bg-white/80 backdrop-blur-md shadow-md"
               key={index}
             >
-              <CardHeader shadow={false} floated={false} className="h-72">
+              <CardHeader shadow={false} floated={false} className="h-48">
                 <img
                   alt="Product"
                   src={image}
-                  className="h-full w-full object-cover rounded-t-md"
+                  className="h-full w-full object-contain rounded-t-md"
                 />
               </CardHeader>
               <CardBody>
                 <div className="mb-2 flex items-center justify-between">
-                  <Typography color="blue-gray" className="font-medium text-xl">
+                  <Typography color="blue-gray" className="font-medium text-lg">
                     {name}
                   </Typography>
                   <Typography color="blue-gray" className="font-medium">

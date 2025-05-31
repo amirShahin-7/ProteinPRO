@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import {
   Input,
   Button,
@@ -11,10 +11,12 @@ import {
 import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
+import context from "../../context/context";
 
 const urlUser = import.meta.env.VITE_DB_USERS;
 
 const SignUp = () => {
+  const { setLogged, setUserData } = useContext(context);
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -36,7 +38,8 @@ const SignUp = () => {
     setIsPhoneValid(/^01[0-9]{9}$/.test(phone));
   };
 
-  const handleSignUp = () => {
+  const handleSignUp = (e) => {
+    e.preventDefault();
     setFormSubmitted(true);
     handleValidation();
 
@@ -64,13 +67,16 @@ const SignUp = () => {
             image: "",
             role: "user",
           };
-          axios.post(urlUser, newUser).then(() => {
+          axios.post(urlUser, newUser).then((res) => {
+            localStorage.setItem("userId", res.data.id);
+            setLogged(true);
+            setUserData(newUser);
             Swal.fire({
               icon: "success",
               title: "Account Created",
               text: "You can now log in!",
             });
-            navigate("/Login");
+            navigate("/");
           });
         }
       });
@@ -107,80 +113,82 @@ const SignUp = () => {
             Sign Up
           </Typography>
         </CardHeader>
-        <CardBody className="flex flex-col gap-4">
-          <Input
-            label="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            color={isUsernameValid ? "green" : "red"}
-            error={!isUsernameValid && username !== ""}
-          />
-          <Input
-            label="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            color={isEmailValid ? "green" : "red"}
-            error={!isEmailValid && email !== ""}
-          />
-          <Input
-            label="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            color={isPasswordValid ? "green" : "red"}
-            error={!isPasswordValid && password !== ""}
-          />
-          <Input
-            label="Phone Number"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            color={isPhoneValid ? "green" : "red"}
-            error={!isPhoneValid && phone !== ""}
-          />
-          <div>
-            <Typography variant="small" className="mb-2">
-              Gender
-            </Typography>
-            <div className="flex gap-6">
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="male"
-                  checked={gender === "male"}
-                  onChange={() => setGender("male")}
-                />
-                <span>Male</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="female"
-                  checked={gender === "female"}
-                  onChange={() => setGender("female")}
-                />
-                <span>Female</span>
-              </label>
+        <CardBody>
+          <form onSubmit={handleSignUp} className="flex flex-col gap-4">
+            <Input
+              label="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              color={isUsernameValid ? "green" : "red"}
+              error={!isUsernameValid && username !== ""}
+            />
+            <Input
+              label="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              color={isEmailValid ? "green" : "red"}
+              error={!isEmailValid && email !== ""}
+            />
+            <Input
+              label="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              color={isPasswordValid ? "green" : "red"}
+              error={!isPasswordValid && password !== ""}
+            />
+            <Input
+              label="Phone Number"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              color={isPhoneValid ? "green" : "red"}
+              error={!isPhoneValid && phone !== ""}
+            />
+            <div>
+              <Typography variant="small" className="mb-2">
+                Gender
+              </Typography>
+              <div className="flex gap-6">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="male"
+                    checked={gender === "male"}
+                    onChange={() => setGender("male")}
+                  />
+                  <span>Male</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="female"
+                    checked={gender === "female"}
+                    onChange={() => setGender("female")}
+                  />
+                  <span>Female</span>
+                </label>
+              </div>
             </div>
-          </div>
+            <Button
+              variant="gradient"
+              color="blue"
+              fullWidth
+              type="submit"
+              disabled={
+                !isUsernameValid ||
+                !isEmailValid ||
+                !isPasswordValid ||
+                !isGenderValid ||
+                !isPhoneValid
+              }
+            >
+              Sign Up
+            </Button>
+          </form>
         </CardBody>
         <CardFooter className="pt-0">
-          <Button
-            variant="gradient"
-            color="blue"
-            fullWidth
-            onClick={handleSignUp}
-            disabled={
-              !isUsernameValid ||
-              !isEmailValid ||
-              !isPasswordValid ||
-              !isGenderValid ||
-              !isPhoneValid
-            }
-          >
-            Sign Up
-          </Button>
           <Typography variant="small" className="mt-6 flex justify-center">
             Already have an account?
             <Typography

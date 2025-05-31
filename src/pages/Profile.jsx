@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import {
   Input,
@@ -10,12 +10,13 @@ import {
   Option,
 } from "@material-tailwind/react";
 import Swal from "sweetalert2";
+import context from "../context/context";
 
 const urlUser = import.meta.env.VITE_DB_USERS;
 const imgbbKey = "f6963f799718a7d9a4061360621415d0";
 
 const Profile = () => {
-  const [user, setUser] = useState(null);
+  const { userData, setUserData } = useContext(context);
   const [isEditing, setIsEditing] = useState(false);
   const [image, setImage] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
@@ -23,28 +24,25 @@ const Profile = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const userId = localStorage.getItem("userId");
 
-  const fetchUser = () => {
-    axios.get(`${urlUser}/${userId}`).then((res) => {
-      setUser(res.data);
-      setImage(res.data.image);
-    });
-  };
-
   useEffect(() => {
-    if (userId) fetchUser();
-  }, [userId]);
+    if (userData) {
+      setImage(
+        userData.image ||
+          "https://cdn-icons-png.flaticon.com/512/3177/3177440.png"
+      );
+    }
+  }, [userData]);
 
   const handleSave = () => {
-    axios.put(`${urlUser}/${userId}`, { ...user, image }).then(() => {
+    axios.put(`${urlUser}/${userId}`, { ...userData, image }).then(() => {
       Swal.fire("Saved!", "Your profile has been updated.", "success");
       setIsEditing(false);
-      localStorage.setItem("username", user.username);
-      localStorage.setItem("userImage", image);
+      setUserData({ ...userData, image });
     });
   };
 
   const handlePasswordChange = () => {
-    if (currentPassword !== user.password) {
+    if (currentPassword !== userData.password) {
       Swal.fire("Error", "Current password is incorrect", "error");
     } else if (newPassword.length < 6) {
       Swal.fire("Error", "New password must be at least 6 characters", "error");
@@ -52,9 +50,10 @@ const Profile = () => {
       Swal.fire("Error", "Passwords do not match", "error");
     } else {
       axios
-        .put(`${urlUser}/${userId}`, { ...user, password: newPassword })
+        .put(`${urlUser}/${userId}`, { ...userData, password: newPassword })
         .then(() => {
           Swal.fire("Updated", "Password changed successfully", "success");
+          setUserData({ ...userData, password: newPassword });
           setCurrentPassword("");
           setNewPassword("");
           setConfirmPassword("");
@@ -98,7 +97,7 @@ const Profile = () => {
       });
   };
 
-  if (!user) return null;
+  if (!userData) return null;
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4">
@@ -122,28 +121,32 @@ const Profile = () => {
         <div className="space-y-4">
           <Input
             label="Username"
-            value={user.username}
+            value={userData.username}
             disabled={!isEditing}
-            onChange={(e) => setUser({ ...user, username: e.target.value })}
+            onChange={(e) =>
+              setUserData({ ...userData, username: e.target.value })
+            }
           />
-          <Input label="Email" value={user.email} disabled />
+          <Input label="Email" value={userData.email} disabled />
           <Input
             label="Phone Number"
-            value={user.phone}
+            value={userData.phone}
             disabled={!isEditing}
-            onChange={(e) => setUser({ ...user, phone: e.target.value })}
+            onChange={(e) =>
+              setUserData({ ...userData, phone: e.target.value })
+            }
           />
           {isEditing ? (
             <Select
               label="Gender"
-              value={user.gender}
-              onChange={(val) => setUser({ ...user, gender: val })}
+              value={userData.gender}
+              onChange={(val) => setUserData({ ...userData, gender: val })}
             >
               <Option value="male">Male</Option>
               <Option value="female">Female</Option>
             </Select>
           ) : (
-            <Input label="Gender" value={user.gender} disabled />
+            <Input label="Gender" value={userData.gender} disabled />
           )}
 
           {isEditing ? (

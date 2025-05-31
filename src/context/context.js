@@ -7,8 +7,8 @@ const context = createContext({
   setLogged: () => {},
   cart: [],
   setCart: () => {},
-  username: "",
-  setUsername: () => {},
+  userData: null,
+  setUserData: () => {},
 });
 
 export default context;

@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import UserMenu from "./UserMenu";
 
 const Header = () => {
-  const { logged, cart, setCart } = useContext(context);
+  const { logged, cart, setCart, userData } = useContext(context);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false);
 
@@ -33,7 +33,14 @@ const Header = () => {
           </Link>
 
           {logged ? (
-            <UserMenu />
+            <>
+              {userData?.role === "admin" && (
+                <Link to="/admin" className="font-medium hover:underline">
+                  Dashboard
+                </Link>
+              )}
+              <UserMenu />
+            </>
           ) : (
             <>
               <Link to="/login" className="flex items-center gap-1 font-medium">
@@ -149,7 +156,7 @@ const Header = () => {
       </div>
 
       <Collapse open={isNavOpen} className="lg:hidden">
-        <div className="flex flex-col gap-2 px-4 pb-4">
+        <div className="flex flex-col gap-2 px-4 pb-4 text-white">
           <Link to="/products">Our Protein</Link>
           {!logged ? (
             <>
@@ -159,7 +166,16 @@ const Header = () => {
           ) : (
             <>
               <Link to="/profile">Profile</Link>
-              <button onClick={() => localStorage.clear()}>Logout</button>
+              <button
+                onClick={() => {
+                  localStorage.clear();
+                  setCart([]);
+                  window.location.href = "/login";
+                }}
+                className="text-red-500 hover:underline"
+              >
+                Logout
+              </button>
             </>
           )}
         </div>

@@ -5,19 +5,32 @@ import context from "./context/context";
 import AdminLayout from "./AdminLayout";
 import UserLayout from "./UserLayout";
 import NotAllowed from "./pages/admin/NotAllowed";
+import { Typography } from "@material-tailwind/react";
 
 const urlPro = import.meta.env.VITE_DB_PRODUCTS;
+const urlUser = import.meta.env.VITE_DB_USERS;
 
 const App = () => {
   const [products, setProducts] = useState([]);
-
-  const [username, setUsername] = useState("");
   const [logged, setLogged] = useState(false);
-
   const [cart, setCart] = useState([]);
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const getProducts = () => {
     axios.get(urlPro).then((res) => setProducts(res.data));
+  };
+
+  const fetchUserData = async (userId) => {
+    try {
+      const res = await axios.get(`${urlUser}/${userId}`);
+      setUserData(res.data);
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+      setUserData(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -27,7 +40,22 @@ const App = () => {
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     setLogged(!!userId);
+    if (userId) {
+      fetchUserData(userId);
+    } else {
+      setLoading(false);
+    }
   }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <Typography variant="h5" color="blue-gray">
+          Loading...
+        </Typography>
+      </div>
+    );
+  }
 
   return (
     <context.Provider
@@ -38,8 +66,8 @@ const App = () => {
         setLogged,
         cart,
         setCart,
-        username,
-        setUsername,
+        userData,
+        setUserData,
       }}
     >
       <Routes>

@@ -7,6 +7,7 @@ import Products from "./pages/product/Products";
 import Footer from "./components/Footer";
 import ProductDetails from "./pages/product/ProductDetails";
 import Profile from "./pages/Profile";
+import ErrorPage from "./pages/ErrorPage";
 const UserLayout = () => {
   return (
     <div className="flex flex-col min-h-screen overflow-hidden">
@@ -18,6 +19,7 @@ const UserLayout = () => {
         <Route path="products" element={<Products />} />
         <Route path="/products/:id" element={<ProductDetails />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
       <Footer />
     </div>

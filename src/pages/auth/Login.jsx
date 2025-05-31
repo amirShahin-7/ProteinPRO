@@ -17,13 +17,14 @@ import axios from "axios";
 const urlUser = import.meta.env.VITE_DB_USERS;
 
 const Login = () => {
-  const { setLogged } = useContext(context);
+  const { setLogged, setUserData } = useContext(context);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
     try {
       const res = await axios.get(`${urlUser}?email=${email}`);
       const matchedUser = res.data[0];
@@ -38,10 +39,8 @@ const Login = () => {
       }
 
       localStorage.setItem("userId", matchedUser.id);
-      localStorage.setItem("username", matchedUser.username);
-      localStorage.setItem("userImage", matchedUser.image);
-      localStorage.setItem("role", matchedUser.role);
       setLogged(true);
+      setUserData(matchedUser);
 
       if (matchedUser.role === "admin") {
         navigate("/admin");
@@ -77,36 +76,38 @@ const Login = () => {
             Sign In
           </Typography>
         </CardHeader>
-        <CardBody className="flex flex-col gap-4">
-          <Input
-            label="Email"
-            size="lg"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <Input
-            label="Password"
-            type={showPassword ? "text" : "password"}
-            size="lg"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <Checkbox
-            label="Show Password"
-            checked={showPassword}
-            onChange={() => setShowPassword(!showPassword)}
-          />
+        <CardBody>
+          <form onSubmit={handleLogin} className="flex flex-col gap-4">
+            <Input
+              label="Email"
+              size="lg"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <Input
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              size="lg"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Checkbox
+              label="Show Password"
+              checked={showPassword}
+              onChange={() => setShowPassword(!showPassword)}
+            />
+            <Button
+              variant="gradient"
+              color="blue"
+              fullWidth
+              type="submit"
+              disabled={!email || !password}
+            >
+              Sign In
+            </Button>
+          </form>
         </CardBody>
         <CardFooter className="pt-0">
-          <Button
-            variant="gradient"
-            color="blue"
-            fullWidth
-            onClick={handleLogin}
-            disabled={!email || !password}
-          >
-            Sign In
-          </Button>
           <Typography variant="small" className="mt-6 flex justify-center">
             Don't have an account?
             <Typography

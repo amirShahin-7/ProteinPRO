@@ -8,32 +8,19 @@ import {
   MenuItem,
   Button,
 } from "@material-tailwind/react";
-import axios from "axios";
-import { useEffect, useState, useContext } from "react";
+import { useContext } from "react";
 import context from "../../context/context";
 
 const AdminNavbar = () => {
   const navigate = useNavigate();
-  const { setLogged, setUsername } = useContext(context);
-  const [username, setLocalUsername] = useState("");
-
-  const userId = localStorage.getItem("userId");
-  const url = import.meta.env.VITE_DB_USERS;
+  const { setLogged, setUserData, userData } = useContext(context);
 
   const handleLogout = () => {
     localStorage.clear();
     setLogged(false);
-    setUsername("");
+    setUserData(null);
     navigate("/login");
   };
-
-  useEffect(() => {
-    if (userId) {
-      axios.get(`${url}/${userId}`).then((res) => {
-        setLocalUsername(res.data.username);
-      });
-    }
-  }, [userId]);
 
   return (
     <div className="w-full bg-black bg-opacity-80 text-white px-6 py-4 shadow flex justify-between items-center">
@@ -45,7 +32,7 @@ const AdminNavbar = () => {
         <Menu placement="bottom-end">
           <MenuHandler>
             <Button className="bg-white/10 hover:bg-white/20 px-4 py-1 rounded text-sm normal-case font-medium">
-              {username}
+              {userData?.username || "Admin"}
             </Button>
           </MenuHandler>
           <MenuList className="bg-white text-black">

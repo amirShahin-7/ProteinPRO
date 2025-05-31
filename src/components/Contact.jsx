@@ -41,3 +41,7 @@ const Contact = ({ open, onClose }) => {
 };
 
 export default Contact;
+
+
+
+
