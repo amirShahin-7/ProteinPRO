@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { getFirestore } from "firebase/firestore"; // استيراد Firestore
 
 const firebaseConfig = {
   apiKey: "AIzaSyCocw5BIb7NN_0Q5a2no7ZeYzbs8ZFEsOM",
@@ -13,5 +14,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+const db = getFirestore(app); // تهيئة Firestore
 
-export { app, analytics };
+export { app, analytics, db }; // تصدير db
