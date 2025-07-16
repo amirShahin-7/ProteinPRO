@@ -1,29 +1,46 @@
+import React, { useState, useEffect } from 'react';
 import {
   Card,
-  CardHeader,
   CardBody,
   CardFooter,
   Typography,
   Button,
   Rating,
+  CardHeader, // Import CardHeader
 } from "@material-tailwind/react";
 import { useContext } from "react";
-import context from "../../context/context";
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../firebase'; // Import db from firebase.js
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
+import context from '../../context/context'; // Corrected context import path
+
 const Products = () => {
-  const { products, cart, setCart } = useContext(context);
+  const [products, setProducts] = useState([]); // Define state for products
+  const { cart, setCart } = useContext(context); // Keep cart and setCart from context if needed
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const productsCollection = collection(db, 'products');
+      const productSnapshot = await getDocs(productsCollection);
+      const productsList = productSnapshot.docs.map(doc => ({
+        id: doc.id, // Get the document ID as the product ID
+        ...doc.data()
+      }));
+      setProducts(productsList); // Set the products state with fetched data
+    };
+    fetchProducts();
+  }, []); // Empty dependency array means this effect runs once on mount
+
   const navigate = useNavigate();
 
   return (
-    <div>
-      <div
-        className="fixed top-0 left-0 w-full h-screen -z-10 bg-cover bg-center"
-        style={{
-          backgroundImage: "url('logo.png')",
-        }}
-      ></div>
+    <div className="fixed top-0 left-0 w-full h-screen -z-10 bg-cover bg-center"
+      style={{
+        backgroundImage: "url('logo.png')",
+      }}
+    >
       <h1 className="flex flex-col content-center items-center text-3xl p-3 text-blue-500">
         Our Protein
       </h1>
@@ -32,17 +49,16 @@ const Products = () => {
           ({ id, price, description, image, name, rating }, index) => (
             <Card
               className="w-64 bg-white/80 backdrop-blur-md shadow-md"
-              key={index}
+              key={id} // Use product id as key
             >
-              <CardHeader shadow={false} floated={false} className="h-48">
+              {/* Image placed directly in CardBody or adjust CardHeader usage */}
                 <img
                   alt="Product"
                   src={image}
                   className="h-full w-full object-contain rounded-t-md"
                 />
-              </CardHeader>
               <CardBody>
-                <div className="mb-2 flex items-center justify-between">
+                <div className="mb-2 flex flex-col items-start justify-between">
                   <Typography color="blue-gray" className="font-medium text-lg">
                     {name}
                   </Typography>
@@ -52,11 +68,13 @@ const Products = () => {
                 </div>
                 <Typography variant="small" color="gray" className="mb-2">
                   {description.slice(0, 50)}...
+                  {description.length > 50 && "..."} {/* Add ellipsis only if description is longer */}
                 </Typography>
-                <div className="flex items-center gap-2">
+                {/* Commenting out rating display as data does not contain rating field */}
+                {/* <div className="flex items-center gap-2">
                   {rating?.toFixed(1)}
                   <Rating value={Math.round(rating)} readonly />
-                </div>
+                </div> */}
                 <Typography variant="small" color="gray">
                   Based on 134 Reviews
                 </Typography>

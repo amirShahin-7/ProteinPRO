@@ -1,17 +1,19 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { getFirestore } from "firebase/firestore"; // استيراد Firestore
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCocw5BIb7NN_0Q5a2no7ZeYzbs8ZFEsOM",
-  authDomain: "protein-pro-6ea7a.firebaseapp.com",
-  projectId: "protein-pro-6ea7a",
-  storageBucket: "protein-pro-6ea7a.firebasestorage.app",
-  messagingSenderId: "101579060961",
-  appId: "1:101579060961:web:c2a72de91ef6dd7b4fa9a0",
-  measurementId: "G-E0YVTVN82J"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+const db = getFirestore(app); // تهيئة Firestore
 
-export { app, analytics };
+export { app, analytics, db }; // تصدير db

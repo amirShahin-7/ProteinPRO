@@ -6,44 +6,36 @@ import AdminLayout from "./AdminLayout";
 import UserLayout from "./UserLayout";
 import NotAllowed from "./pages/admin/NotAllowed";
 import { Typography } from "@material-tailwind/react";
-
-// const urlPro = import.meta.env.
-// const urlUser = import.meta.env.
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../src/firebase";
 
 const App = () => {
-  const [products, setProducts] = useState([]);
-  const [logged, setLogged] = useState(false);
+  const [logged, setLogged] = useState(false); // Keep logged state for clarity
   const [cart, setCart] = useState([]);
+  // products state is no longer needed in global context as they are fetched in Products.jsx
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const getProducts = () => {
-    axios.get(urlPro).then((res) => setProducts(res.data));
-  };
-
-  const fetchUserData = async (userId) => {
-    try {
-      const res = await axios.get(`${urlUser}/${userId}`);
-      setUserData(res.data);
-    } catch (error) {
-      console.error("Failed to fetch user data:", error);
-      setUserData(null);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    getProducts();
-  }, []);
-
-  useEffect(() => {
+    // Check for user login status and fetch user data on app load
     const userId = localStorage.getItem("userId");
     setLogged(!!userId);
+
     if (userId) {
-      fetchUserData(userId);
+      const fetchUserData = async () => {
+        try {
+          const userDoc = await getDoc(doc(db, 'users', userId));
+          if (userDoc.exists()) {
+            setUserData({ id: userDoc.id, ...userDoc.data() });
+          }
+        } finally {
+          setLoading(false); // Ensure loading is set to false after attempting to fetch
+        }
+      };
+      fetchUserData();
     } else {
-      setLoading(false);
+      setLoading(false); // If no user ID, loading is done
     }
   }, []);
 
@@ -60,8 +52,6 @@ const App = () => {
   return (
     <context.Provider
       value={{
-        products,
-        setProducts,
         logged,
         setLogged,
         cart,
@@ -72,7 +62,7 @@ const App = () => {
     >
       <Routes>
         <Route path="/*" element={<UserLayout />} />
-        <Route path="/admin/*" element={<AdminLayout />} />
+      <Route path="/admin/*" element={<AdminLayout />} />
         <Route path="/not-allowed" element={<NotAllowed />} />
       </Routes>
     </context.Provider>

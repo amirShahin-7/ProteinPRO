@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import {
   Card,
   CardBody,
   CardHeader,
+  CardFooter,
+  CardTitle,
   Typography,
   Button,
   CardFooter,
@@ -11,16 +12,25 @@ import {
 import { FiTrash2, FiEdit, FiPlus } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../../firebase'; // Import db from firebase.js
 
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const url = import.meta.env.VITE_DB_PRODUCTS;
 
-  const fetchProducts = () => {
-    axios.get(url).then((res) => setProducts(res.data));
+  const fetchProducts = async () => {
+    setLoading(true);
+    const productsCollection = collection(db, 'products');
+    const productSnapshot = await getDocs(productsCollection);
+    const productsList = productSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    setProducts(productsList);
+    setLoading(false);
   };
-
   const deleteProduct = (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -32,7 +42,11 @@ const AdminProducts = () => {
       confirmButtonText: "Yes, delete",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`${url}/${id}`).then(() => {
+        const productDoc = doc(db, 'products', id);
+        deleteDoc(productDoc)
+        .then(() => {
+          // Remove the deleted product from the local state
+          setProducts(products.filter(product => product.id !== id));
           fetchProducts();
           Swal.fire("Deleted!", "Product has been deleted.", "success");
         });
@@ -43,6 +57,16 @@ const AdminProducts = () => {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Typography variant="h5" color="blue-gray">
+          Loading Products...
+        </Typography>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -55,7 +79,6 @@ const AdminProducts = () => {
           Add Product
         </Button>
       </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {products.map(({ id, name, image, price, rating }) => (
           <Card key={id} className="shadow-md">
@@ -65,7 +88,7 @@ const AdminProducts = () => {
                 alt={name}
                 className="h-full w-full object-cover"
               />
-            </CardHeader>
+            </CardHeader> {/* Added closing tag */}
             <CardBody className="text-center">
               <Typography variant="h6" className="mb-1">
                 {name}
