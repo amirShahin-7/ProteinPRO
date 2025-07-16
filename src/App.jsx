@@ -7,8 +7,8 @@ import UserLayout from "./UserLayout";
 import NotAllowed from "./pages/admin/NotAllowed";
 import { Typography } from "@material-tailwind/react";
 
-const urlPro = import.meta.env.VITE_DB_PRODUCTS;
-const urlUser = import.meta.env.VITE_DB_USERS;
+// const urlPro = import.meta.env.
+// const urlUser = import.meta.env.
 
 const App = () => {
   const [products, setProducts] = useState([]);

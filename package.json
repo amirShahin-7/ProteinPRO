@@ -25,14 +25,27 @@
   },
   "dependencies": {
     "@material-tailwind/react": "^2.1.10",
-    "axios": "^1.8.4",
+    "axios": "^1.10.0",
+    "firebase": "^11.10.0",
     "heroicons": "^2.2.0",
-    "json-server": "^1.0.0-beta.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.6.2",
     "sweetalert2": "^11.6.13",
     "sweetalert2-react-content": "^5.1.0"
-  }
+  },
+  "description": "A modern, full-stack e-commerce application for protein supplements built with React, Node.js, Express, and PostgreSQL with Prisma ORM.",
+  "main": "eslint.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amirShahin-7/ProteinPRO.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/amirShahin-7/ProteinPRO/issues"
+  },
+  "homepage": "https://github.com/amirShahin-7/ProteinPRO#readme"
 }
