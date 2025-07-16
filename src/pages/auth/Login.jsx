@@ -12,9 +12,9 @@ import {
   Button,
 } from "@material-tailwind/react";
 import Swal from "sweetalert2";
-import axios from "axios";
-
-const urlUser = import.meta.env.VITE_DB_USERS;
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../../firebase"; // Assuming firebase.js is in the parent directory of context
 
 const Login = () => {
   const { setLogged, setUserData } = useContext(context);
@@ -26,25 +26,26 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.get(`${urlUser}?email=${email}`);
-      const matchedUser = res.data[0];
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-      if (!matchedUser || matchedUser.password !== password) {
-        Swal.fire({
-          icon: "error",
-          title: "Login Failed",
-          text: "Email or password is incorrect!",
-        });
-        return;
+      // Fetch user data from Firestore
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        const userData = { id: userDocSnap.id, ...userDocSnap.data() };
+        localStorage.setItem("userId", user.uid); // Use UID as userId
+        setLogged(true);
+        setUserData(userData);
+
+        if (userData.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
       }
-
-      localStorage.setItem("userId", matchedUser.id);
-      setLogged(true);
-      setUserData(matchedUser);
-
-      if (matchedUser.role === "admin") {
-        navigate("/admin");
-      } else {
+      else {
         navigate("/");
       }
     } catch (error) {
@@ -52,7 +53,21 @@ const Login = () => {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Something went wrong. Try again later.",
+        text: error.message, // Display Firebase error message
+      });
+      console.error("Firebase Auth Error:", error); // Log Firebase error
+
+      let errorMessage = "An error occurred during login.";
+      switch (error.code) {
+        case 'auth/invalid-email':
+        case 'auth/user-disabled':
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
+          errorMessage = "Invalid email or password.";
+          break;
+        default:
+          errorMessage = error.message;
+          break;
       });
     }
   };

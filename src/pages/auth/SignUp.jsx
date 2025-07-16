@@ -12,9 +12,9 @@ import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
 import context from "../../context/context";
-
-const urlUser = import.meta.env.VITE_DB_USERS;
-
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { collection, doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../../firebase';
 const SignUp = () => {
   const { setLogged, setUserData } = useContext(context);
   const navigate = useNavigate();
@@ -38,53 +38,61 @@ const SignUp = () => {
     setIsPhoneValid(/^01[0-9]{9}$/.test(phone));
   };
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => { // Make the handler async
     e.preventDefault();
     setFormSubmitted(true);
     handleValidation();
 
-    if (
-      isUsernameValid &&
-      isEmailValid &&
-      isPasswordValid &&
-      isGenderValid &&
-      isPhoneValid
-    ) {
-      axios.get(`${urlUser}?email=${email}`).then((res) => {
-        if (res.data.length > 0) {
-          Swal.fire({
-            icon: "error",
-            title: "Email already registered",
-            text: "Please use a different email.",
-          });
-        } else {
-          const newUser = {
-            username,
-            email,
-            password,
-            gender,
-            phone,
-            image: "",
-            role: "user",
-          };
-          axios.post(urlUser, newUser).then((res) => {
-            localStorage.setItem("userId", res.data.id);
-            setLogged(true);
-            setUserData(newUser);
-            Swal.fire({
-              icon: "success",
-              title: "Account Created",
-              text: "You can now log in!",
-            });
-            navigate("/");
-          });
-        }
-      });
-    } else {
+    if (!isUsernameValid || !isEmailValid || !isPasswordValid || !isGenderValid || !isPhoneValid) {
       Swal.fire({
         icon: "error",
         title: "Validation Error",
         text: "Please fill in all fields correctly!",
+      });
+      return; // Stop execution if validation fails
+    }
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      await setDoc(doc(db, "users", user.uid), {
+        username,
+        gender,
+        phone,
+        role: "user"
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: "Account Created",
+        text: "You can now log in!",
+      });
+      navigate("/Login"); // Navigate to login page after successful signup
+    } catch (error) {
+      console.error("Error signing up:", error); // Log error
+      let errorMessage = "An error occurred during signup.";
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          errorMessage = "The email address is already in use by another account.";
+          break;
+        case 'auth/invalid-email':
+          errorMessage = "The email address is invalid.";
+          break;
+        case 'auth/operation-not-allowed':
+          errorMessage = "Email/password accounts are not enabled. Enable Email/Password sign-in in the Firebase console.";
+          break;
+        case 'auth/weak-password':
+          errorMessage = "The password is too weak.";
+          break;
+        default:
+          errorMessage = error.message;
+          break;
+      }
+      Swal.fire({
+        icon: "error",
+        title: "Signup Error",
+        text: errorMessage,
       });
     }
   };

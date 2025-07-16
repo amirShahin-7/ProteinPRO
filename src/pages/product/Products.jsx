@@ -14,7 +14,7 @@ import { db } from '../../firebase'; // Import db from firebase.js
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
-import { context } from '../../context/context'; // Corrected context import path
+import context from '../../context/context'; // Corrected context import path
 
 const Products = () => {
   const [products, setProducts] = useState([]); // Define state for products
