@@ -5,12 +5,12 @@ import {
   Card,
   Typography,
   Avatar,
-  Select, Option
+  Select,
+  Option,
 } from "@material-tailwind/react";
-import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { db } from '../firebase'; // Correct import path
-import { auth } from '../firebase'; // Correct import path
-import { updatePassword, deleteUser } from 'firebase/auth'; // Import auth functions
+import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import { db, auth } from "../context/firebase";
+import { updatePassword, deleteUser } from "firebase/auth";
 
 import Swal from "sweetalert2";
 import context from "../context/context";
@@ -42,14 +42,20 @@ const Profile = () => {
     const fetchUserData = async () => {
       if (currentUser) {
         try {
-          const userDocRef = doc(db, 'users', currentUser.uid);
+          const userDocRef = doc(db, "users", currentUser.uid);
           const userDocSnap = await getDoc(userDocRef);
           if (userDocSnap.exists()) {
             setUserData(userDocSnap.data());
-            setImage(userDocSnap.data().image || "https://cdn-icons-png.flaticon.com/512/3177/3177440.png");
+            setImage(
+              userDocSnap.data().image ||
+                "https://cdn-icons-png.flaticon.com/512/3177/3177440.png"
+            );
           } else {
             // Handle case where user document doesn't exist (shouldn't happen if signup creates it)
-            console.error("User document not found in Firestore for UID:", currentUser.uid);
+            console.error(
+              "User document not found in Firestore for UID:",
+              currentUser.uid
+            );
             setUserData(null);
           }
         } catch (error) {
@@ -74,7 +80,7 @@ const Profile = () => {
     if (!currentUser || !userData) return;
 
     try {
-      const userDocRef = doc(db, 'users', currentUser.uid);
+      const userDocRef = doc(db, "users", currentUser.uid);
       await updateDoc(userDocRef, { ...userData, image });
       Swal.fire("Saved!", "Your profile has been updated.", "success");
       setIsEditing(false);
@@ -92,8 +98,8 @@ const Profile = () => {
     }
 
     if (!currentPassword || !newPassword || !confirmPassword) {
-       Swal.fire("Error", "Please fill in all password fields.", "error");
-       return;
+      Swal.fire("Error", "Please fill in all password fields.", "error");
+      return;
     }
 
     // Re-authenticate the user before changing password (optional but recommended)
@@ -101,7 +107,11 @@ const Profile = () => {
     // For simplicity here, we'll just check the new password validity and perform update.
 
     if (newPassword.length < 6) {
-      Swal.fire("Error", "New password must be at least 6 characters.", "error");
+      Swal.fire(
+        "Error",
+        "New password must be at least 6 characters.",
+        "error"
+      );
     } else if (newPassword.length < 6) {
       Swal.fire("Error", "New password must be at least 6 characters", "error");
     } else if (newPassword !== confirmPassword) {
@@ -116,15 +126,19 @@ const Profile = () => {
         // Note: We don't store password in Firestore userData for security reasons.
       } catch (error) {
         console.error("Error changing password:", error);
-        Swal.fire("Error", error.message || "Failed to change password.", "error");
+        Swal.fire(
+          "Error",
+          error.message || "Failed to change password.",
+          "error"
+        );
       }
     }
   };
 
   const handleDelete = async () => {
     if (!currentUser) {
-       Swal.fire("Error", "You must be logged in to delete account.", "error");
-       return;
+      Swal.fire("Error", "You must be logged in to delete account.", "error");
+      return;
     }
 
     Swal.fire({
@@ -133,11 +147,12 @@ const Profile = () => {
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => { // Make the callback async
+    }).then(async (result) => {
+      // Make the callback async
       if (result.isConfirmed) {
         try {
           // Delete user document from Firestore first
-          const userDocRef = doc(db, 'users', currentUser.uid);
+          const userDocRef = doc(db, "users", currentUser.uid);
           await deleteDoc(userDocRef);
 
           // Delete user from Firebase Authentication
@@ -155,7 +170,11 @@ const Profile = () => {
           });
         } catch (error) {
           console.error("Error deleting account:", error);
-          Swal.fire("Error", error.message || "Failed to delete account.", "error");
+          Swal.fire(
+            "Error",
+            error.message || "Failed to delete account.",
+            "error"
+          );
         }
       }
     });
@@ -184,17 +203,26 @@ const Profile = () => {
     );
   }
 
-  if (!userData) return <Typography color="red" className="text-center mt-8">User data not available. Please log in.</Typography>;
+  if (!userData)
+    return (
+      <Typography color="red" className="text-center mt-8">
+        User data not available. Please log in.
+      </Typography>
+    );
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl p-6 shadow-lg">
+    <div className="min-h-screen bg-gradient-to-br from-[#181c2b] via-[#232946] to-[#0f172a] flex items-center justify-center p-4 font-sans relative overflow-hidden pt-32 text-gray-100">
+      {/* Decorative gradient overlays */}
+      <div className="pointer-events-none absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-br from-[#00c6fb]/30 to-[#005bea]/10 rounded-full blur-3xl z-0" />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 bg-gradient-to-tr from-[#ffb86b]/30 to-[#ff6bcb]/10 rounded-full blur-3xl z-0" />
+      <Card className="w-full max-w-2xl p-8 shadow-2xl border border-white/10 bg-gradient-to-br from-[#232946]/80 to-[#181c2b]/80 rounded-3xl backdrop-blur-xl z-10">
         <div className="flex items-center gap-4 mb-6">
           <Avatar
             src={
               image || "https://cdn-icons-png.flaticon.com/512/3177/3177440.png"
             }
             size="lg"
+            className="border-4 border-[#00c6fb] shadow-lg"
           />
           {isEditing && (
             <Input
@@ -213,35 +241,66 @@ const Profile = () => {
             onChange={(e) =>
               setUserData({ ...userData, username: e.target.value })
             }
+            className="text-white"
+            labelProps={{ className: "text-[#00c6fb] font-semibold" }}
+            crossOrigin="anonymous"
           />
-          <Input label="Email" value={userData.email} disabled />
+          <Input
+            label="Email"
+            value={userData.email}
+            disabled
+            className="text-white"
+            labelProps={{ className: "text-[#00c6fb] font-semibold" }}
+            crossOrigin="anonymous"
+          />
           <Input
             label="Phone Number"
             value={userData.phone}
             disabled={!isEditing}
-            onChange={(e) => // Use event.target.value
-              setUserData({ ...userData, phone: e.target.value })
-            }
+            onChange={(
+              e // Use event.target.value
+            ) => setUserData({ ...userData, phone: e.target.value })}
+            className="text-white"
+            labelProps={{ className: "text-[#00c6fb] font-semibold" }}
+            crossOrigin="anonymous"
           />
           {isEditing ? (
             <Select
               label="Gender"
               value={userData.gender}
               onChange={(val) => setUserData({ ...userData, gender: val })}
+              className="text-white"
+              labelProps={{ className: "text-[#00c6fb] font-semibold" }}
+              crossOrigin="anonymous"
             >
               <Option value="male">Male</Option>
               <Option value="female">Female</Option>
             </Select>
           ) : (
-            <Input label="Gender" value={userData.gender} disabled />
+            <Input
+              label="Gender"
+              value={userData.gender}
+              disabled
+              className="text-white"
+              labelProps={{ className: "text-[#00c6fb] font-semibold" }}
+              crossOrigin="anonymous"
+            />
           )}
 
           {isEditing ? (
-            <Button color="blue" onClick={handleSave} fullWidth>
+            <Button
+              className="bg-gradient-to-r from-[#00c6fb] to-[#005bea] text-white font-bold shadow-md hover:scale-105 transition-transform"
+              onClick={handleSave}
+              fullWidth
+            >
               Save Changes
             </Button>
           ) : (
-            <Button color="blue" onClick={() => setIsEditing(true)} fullWidth>
+            <Button
+              className="bg-gradient-to-r from-[#00c6fb] to-[#005bea] text-white font-bold shadow-md hover:scale-105 transition-transform"
+              onClick={() => setIsEditing(true)}
+              fullWidth
+            >
               Edit Info
             </Button>
           )}
@@ -254,26 +313,43 @@ const Profile = () => {
             type="password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
+            className="text-white"
+            labelProps={{ className: "text-[#00c6fb] font-semibold" }}
+            crossOrigin="anonymous"
           />
           <Input
             label="New Password"
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
+            className="text-white"
+            labelProps={{ className: "text-[#00c6fb] font-semibold" }}
+            crossOrigin="anonymous"
           />
           <Input
             label="Confirm New Password"
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
+            className="text-white"
+            labelProps={{ className: "text-[#00c6fb] font-semibold" }}
+            crossOrigin="anonymous"
           />
-          <Button color="green" onClick={handlePasswordChange} fullWidth>
+          <Button
+            className="bg-gradient-to-r from-[#ffb86b] to-[#ff6bcb] text-white font-bold shadow-md hover:scale-105 transition-transform"
+            onClick={handlePasswordChange}
+            fullWidth
+          >
             Change Password
           </Button>
         </div>
 
         <div className="mt-10 border-t pt-6">
-          <Button color="red" onClick={handleDelete} fullWidth>
+          <Button
+            className="bg-gradient-to-r from-[#232946] to-[#181c2b] text-white font-bold shadow-md hover:scale-105 transition-transform"
+            onClick={handleDelete}
+            fullWidth
+          >
             Delete Account
           </Button>
         </div>

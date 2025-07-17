@@ -16,26 +16,35 @@ const Header = () => {
   );
 
   return (
-    <Navbar className="sticky top-0 z-50 mx-auto max-w-screen-xl p-2 lg:rounded-full lg:pl-6 bg-blue-500 shadow-md">
+    <Navbar className="fixed top-0 left-0 right-0 z-50 mx-auto max-w-screen-xl p-3 lg:rounded-full bg-gradient-to-br from-[#181c2b]/90 via-[#232946]/90 to-[#0f172a]/90 shadow-2xl border border-white/10 backdrop-blur-xl">
       <div className="flex items-center justify-between text-white w-full">
         <Link to="/" className="flex items-center gap-3">
           <img
-            src="logo.png"
+            src="https://i.postimg.cc/YCXJv7tR/logo.png"
             alt="Logo"
-            className="w-10 h-10 rounded-full object-cover"
+            className="w-12 h-12 rounded-full object-cover shadow-lg border-2 border-[#00c6fb]"
+            loading="lazy"
           />
-          <span className="text-xl font-bold tracking-wide">PROTEIN PRO</span>
+          <span className="text-2xl font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-[#00c6fb] to-[#005bea] drop-shadow-lg">
+            PROTEIN PRO
+          </span>
         </Link>
 
-        <div className="hidden lg:flex items-center gap-6">
-          <Link to="/products" className="font-medium hover:underline">
+        <div className="hidden lg:flex items-center gap-8">
+          <Link
+            to="/products"
+            className="font-semibold hover:underline text-[#00c6fb] hover:text-[#ffb86b] transition"
+          >
             Our Protein
           </Link>
 
           {logged ? (
             <>
               {userData?.role === "admin" && (
-                <Link to="/admin" className="font-medium hover:underline">
+                <Link
+                  to="/admin"
+                  className="font-semibold hover:underline text-[#ffb86b] hover:text-[#00c6fb] transition"
+                >
                   Dashboard
                 </Link>
               )}
@@ -43,13 +52,16 @@ const Header = () => {
             </>
           ) : (
             <>
-              <Link to="/login" className="flex items-center gap-1 font-medium">
+              <Link
+                to="/login"
+                className="flex items-center gap-1 font-semibold text-[#00c6fb] hover:text-[#ffb86b] transition"
+              >
                 <FiLogIn className="text-lg" />
                 Sign In
               </Link>
               <Link
                 to="/sign-up"
-                className="flex items-center gap-1 font-medium"
+                className="flex items-center gap-1 font-semibold text-[#ffb86b] hover:text-[#00c6fb] transition"
               >
                 <FiUserPlus className="text-lg" />
                 Sign Up
@@ -60,20 +72,20 @@ const Header = () => {
           <div className="relative">
             <button
               onClick={() => setIsCartOpen(!isCartOpen)}
-              className="p-2 rounded-full border border-white/40 bg-white/10 backdrop-blur-sm hover:bg-white/20 transition"
+              className="p-2 rounded-full border-2 border-[#00c6fb]/40 bg-gradient-to-br from-[#232946]/60 to-[#181c2b]/60 hover:from-[#00c6fb]/30 hover:to-[#005bea]/30 shadow-lg transition relative"
             >
-              <FiShoppingBag className="text-xl text-white" />
+              <FiShoppingBag className="text-2xl text-[#00c6fb]" />
               {cart.length > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full shadow-md">
+                <span className="absolute -top-2 -right-2 bg-gradient-to-r from-[#ffb86b] to-[#ff6bcb] text-white text-[10px] w-6 h-6 flex items-center justify-center rounded-full shadow-md border-2 border-white font-bold">
                   {cart.length}
                 </span>
               )}
             </button>
 
             {isCartOpen && (
-              <div className="absolute right-0 mt-3 w-72 bg-white text-black shadow-xl rounded-lg p-4 z-50">
+              <div className="absolute right-0 mt-3 w-80 bg-gradient-to-br from-[#232946]/95 to-[#181c2b]/95 text-white shadow-2xl rounded-2xl p-5 z-50 border border-white/10">
                 {cart.length === 0 ? (
-                  <p className="text-center text-gray-500 text-sm">
+                  <p className="text-center text-gray-400 text-sm">
                     Cart is empty
                   </p>
                 ) : (
@@ -82,11 +94,13 @@ const Header = () => {
                       {cart.map((item) => (
                         <div
                           key={item.id}
-                          className="flex justify-between items-center border-b pb-2"
+                          className="flex justify-between items-center border-b border-white/10 pb-2"
                         >
                           <div>
-                            <p className="font-semibold text-sm">{item.name}</p>
-                            <p className="text-xs text-gray-600">
+                            <p className="font-semibold text-sm text-[#00c6fb]">
+                              {item.name}
+                            </p>
+                            <p className="text-xs text-gray-400">
                               ${item.price} x {item.quantity}
                             </p>
                           </div>
@@ -103,11 +117,13 @@ const Header = () => {
                                   );
                                 }
                               }}
-                              className="px-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
+                              className="px-2 text-sm bg-[#232946]/60 rounded hover:bg-[#00c6fb]/30 text-white"
                             >
                               -
                             </button>
-                            <span className="text-sm">{item.quantity}</span>
+                            <span className="text-sm font-bold text-[#ffb86b]">
+                              {item.quantity}
+                            </span>
                             <button
                               onClick={() =>
                                 setCart(
@@ -118,7 +134,7 @@ const Header = () => {
                                   )
                                 )
                               }
-                              className="px-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
+                              className="px-2 text-sm bg-[#232946]/60 rounded hover:bg-[#00c6fb]/30 text-white"
                             >
                               +
                             </button>
@@ -126,7 +142,7 @@ const Header = () => {
                               onClick={() =>
                                 setCart(cart.filter((i) => i.id !== item.id))
                               }
-                              className="text-red-600 text-sm ml-2"
+                              className="text-[#ff6bcb] text-lg ml-2 hover:text-red-500"
                             >
                               <FiTrash2 />
                             </button>
@@ -134,7 +150,7 @@ const Header = () => {
                         </div>
                       ))}
                     </div>
-                    <div className="text-right font-bold pt-2 border-t text-blue-600">
+                    <div className="text-right font-bold pt-2 border-t border-white/10 text-[#00c6fb]">
                       Total: ${totalPrice.toFixed(2)}
                     </div>
                   </>
@@ -151,28 +167,48 @@ const Header = () => {
           onClick={() => setIsNavOpen((cur) => !cur)}
           className="ml-auto lg:hidden"
         >
-          <FiLogIn className="h-6 w-6" />
+          <FiLogIn className="h-6 w-6 text-[#00c6fb]" />
         </IconButton>
       </div>
 
       <Collapse open={isNavOpen} className="lg:hidden">
-        <div className="flex flex-col gap-2 px-4 pb-4 text-white">
-          <Link to="/products">Our Protein</Link>
+        <div className="flex flex-col gap-3 px-4 pb-4 text-white bg-gradient-to-br from-[#232946]/90 to-[#181c2b]/90 rounded-xl mt-2 shadow-lg border border-white/10">
+          <Link
+            to="/products"
+            className="text-[#00c6fb] font-semibold hover:text-[#ffb86b] transition"
+          >
+            Our Protein
+          </Link>
           {!logged ? (
             <>
-              <Link to="/login">Sign In</Link>
-              <Link to="/sign-up">Sign Up</Link>
+              <Link
+                to="/login"
+                className="text-[#00c6fb] font-semibold hover:text-[#ffb86b] transition"
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/sign-up"
+                className="text-[#ffb86b] font-semibold hover:text-[#00c6fb] transition"
+              >
+                Sign Up
+              </Link>
             </>
           ) : (
             <>
-              <Link to="/profile">Profile</Link>
+              <Link
+                to="/profile"
+                className="text-[#00c6fb] font-semibold hover:text-[#ffb86b] transition"
+              >
+                Profile
+              </Link>
               <button
                 onClick={() => {
                   localStorage.clear();
                   setCart([]);
                   window.location.href = "/login";
                 }}
-                className="text-red-500 hover:underline"
+                className="text-[#ff6bcb] font-semibold hover:text-red-500 hover:underline transition"
               >
                 Logout
               </button>

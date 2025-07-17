@@ -1,6 +1,7 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import context from "../../context/context";
+import { collection, getDocs } from "firebase/firestore";
 import {
   Button,
   Typography,
@@ -8,69 +9,92 @@ import {
   CardBody,
   CardFooter,
 } from "@material-tailwind/react";
+import { db } from "../../context/firebase";
 
 const Home = () => {
-  const { products } = useContext(context);
+  const { products, setProducts } = useContext(context);
   const navigate = useNavigate();
-  const featured = products.slice(0, 3);
+  const featured = products ? products.slice(0, 3) : [];
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const querySnapshot = await getDocs(collection(db, "products"));
+      const productsData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setProducts(productsData);
+    };
+    fetchProducts();
+  }, [setProducts]);
   return (
-    <div className="relative min-h-screen overflow-hidden">
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="fixed top-0 left-0 w-full h-full object-cover z-[-1]"
-      >
-        <source
-          src="bg.mp4"
-          type="video/mp4"
-          style={{ filter: "brightness(0.4)" }}
-        />
-      </video>
-
-      <section className="flex flex-col justify-center items-center h-[80vh] px-6">
-        <div className="bg-black/50 p-8 rounded-xl text-center text-white backdrop-blur-md shadow-lg">
-          <img src="/logo.png" className="w-28 mx-auto mb-4" />
-          <Typography variant="h3" className="font-bold mb-2">
+    <div className="relative w-full min-h-screen bg-gradient-to-br from-[#181c2b] via-[#232946] to-[#0f172a] text-gray-100 font-sans">
+      {/* Hero Section */}
+      <section className="flex flex-col justify-center items-center h-[80vh] relative z-10">
+        <div className="bg-gradient-to-br from-[#232946]/80 to-[#181c2b]/80 p-10 rounded-3xl text-center text-white shadow-2xl border border-white/10 backdrop-blur-xl max-w-xl w-full mx-4">
+          <img
+            src="https://i.postimg.cc/YCXJv7tR/logo.png"
+            className="w-32 mx-auto mb-6 drop-shadow-lg"
+            loading="lazy"
+            alt="Protein Pro Logo"
+          />
+          <Typography
+            variant="h2"
+            className="font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-[#00c6fb] to-[#005bea]"
+          >
             Fuel Your Muscles. Rule the Game.
           </Typography>
-          <Typography className="mb-4">
-            اكتشف أفضل منتجات البروتين والأداء الرياضي
+          <Typography className="mb-6 text-lg text-gray-200">
+            Discover the best protein and sports performance products.
           </Typography>
-          <Button onClick={() => navigate("/products")} color="blue" size="lg">
+          <Button
+            onClick={() => navigate("/products")}
+            color="blue"
+            size="lg"
+            className="bg-gradient-to-r from-[#00c6fb] to-[#005bea] text-white font-bold shadow-lg hover:scale-105 transition-transform"
+          >
             Explore Products
           </Button>
         </div>
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <div className="w-96 h-96 bg-gradient-to-br from-[#00c6fb]/30 to-[#005bea]/10 rounded-full blur-3xl absolute -top-32 -left-32" />
+          <div className="w-80 h-80 bg-gradient-to-tr from-[#ffb86b]/30 to-[#ff6bcb]/10 rounded-full blur-3xl absolute -bottom-24 -right-24" />
+        </div>
       </section>
-
-      <section className="py-16 px-6 max-w-6xl mx-auto text-white">
-        <Typography variant="h4" className="text-center mb-8 font-bold">
+      {/* Featured Products */}
+      <section className="py-20 px-6 container mx-auto">
+        <Typography
+          variant="h3"
+          className="text-center mb-12 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#00c6fb] to-[#005bea]"
+        >
           Featured Products
         </Typography>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
           {featured.map(({ id, name, image, price }) => (
             <Card
               key={id}
-              className="shadow-md bg-white/10 backdrop-blur-sm text-white"
+              className="shadow-xl bg-gradient-to-br from-[#232946]/80 to-[#181c2b]/80 border border-white/10 text-white rounded-2xl hover:scale-105 transition-transform"
             >
-              <CardBody className="text-center">
+              <CardBody className="text-center flex flex-col items-center">
                 <img
                   src={image}
                   alt={name}
-                  className="h-40 w-full object-cover mb-4 rounded"
+                  className="h-64 w-full object-contain mb-6 rounded-xl bg-white/10 p-4 shadow-inner"
+                  loading="lazy"
                 />
-                <Typography variant="h6" className="mb-2">
+                <Typography
+                  variant="h5"
+                  className="mb-2 font-bold text-[#00c6fb]"
+                >
                   {name}
                 </Typography>
-                <Typography color="blue" className="mb-2 font-bold">
+                <Typography className="mb-2 font-bold text-lg text-[#ffb86b]">
                   ${price}
                 </Typography>
               </CardBody>
               <CardFooter className="flex flex-col gap-2 px-4 pb-4">
                 <Button
-                  color="blue"
+                  className="bg-gradient-to-r from-[#00c6fb] to-[#005bea] text-white font-bold shadow-md hover:scale-105 transition-transform"
                   onClick={() => navigate(`/products/${id}`)}
                 >
                   Details
@@ -79,43 +103,65 @@ const Home = () => {
             </Card>
           ))}
         </div>
-        <div className="flex justify-center mt-8">
-          <Button variant="outlined" onClick={() => navigate("/products")}>
+        <div className="flex justify-center mt-12">
+          <Button
+            variant="gradient"
+            className="bg-gradient-to-r from-[#ffb86b] to-[#ff6bcb] text-white font-bold px-8 py-3 text-lg shadow-lg hover:scale-105 transition-transform"
+            onClick={() => navigate("/products")}
+          >
             View All Products
           </Button>
         </div>
       </section>
-
-      <section className="bg-white/10 backdrop-blur-sm text-white py-16 px-6">
-        <Typography variant="h4" className="text-center mb-8 font-bold">
+      {/* Why Choose Us */}
+      <section className="bg-gradient-to-br from-[#232946]/80 to-[#181c2b]/80 border-t border-white/10 py-20 px-6">
+        <Typography
+          variant="h3"
+          className="text-center mb-12 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#ffb86b] to-[#ff6bcb]"
+        >
           Why Choose Protein Pro?
         </Typography>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-          <div>
-            <Typography variant="h5" className="mb-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+          <div className="bg-white/5 rounded-2xl p-8 shadow-lg border border-white/10 hover:scale-105 transition-transform">
+            <Typography variant="h5" className="mb-3 font-bold text-[#00c6fb]">
               ✅ Original Products
             </Typography>
-            <Typography>نضمن لك منتجات أصلية ومعتمدة %100</Typography>
+            <Typography className="text-gray-200">
+              We guarantee 100% original and certified products.
+            </Typography>
           </div>
-          <div>
-            <Typography variant="h5" className="mb-2">
+          <div className="bg-white/5 rounded-2xl p-8 shadow-lg border border-white/10 hover:scale-105 transition-transform">
+            <Typography variant="h5" className="mb-3 font-bold text-[#ffb86b]">
               🚚 Fast Delivery
             </Typography>
-            <Typography>شحن سريع وآمن لجميع المحافظات</Typography>
+            <Typography className="text-gray-200">
+              Fast and safe shipping to all governorates
+            </Typography>
           </div>
-          <div>
-            <Typography variant="h5" className="mb-2">
+          <div className="bg-white/5 rounded-2xl p-8 shadow-lg border border-white/10 hover:scale-105 transition-transform">
+            <Typography variant="h5" className="mb-3 font-bold text-[#ff6bcb]">
               🏋️‍♂️ Trusted by Athletes
             </Typography>
-            <Typography>مُعتمد من رياضيين محترفين ومستخدمين حقيقيين</Typography>
+            <Typography className="text-gray-200">
+              Endorsed by professional athletes and real users
+            </Typography>
           </div>
         </div>
       </section>
-
-      <section className="py-16 px-6 bg-black bg-opacity-30   text-white text-center">
-        <Typography variant="h4" className="mb-4 font-bold">
-          انضم لآلاف الرياضيين وابدأ رحلتك النهاردة
+      {/* Call to Action */}
+      <section className="py-20 bg-gradient-to-r from-[#00c6fb]/20 via-[#005bea]/10 to-[#ffb86b]/10 text-white text-center">
+        <Typography
+          variant="h3"
+          className="mb-6 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#ffb86b] to-[#ff6bcb]"
+        >
+          Join thousands of athletes and start your journey today.
         </Typography>
+        <Button
+          onClick={() => navigate("/sign-up")}
+          className="mt-4 bg-gradient-to-r from-[#00c6fb] to-[#005bea] text-white font-bold px-8 py-3 text-lg shadow-lg hover:scale-105 transition-transform"
+        >
+          Get Started
+        </Button>
       </section>
     </div>
   );

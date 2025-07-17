@@ -1,91 +1,81 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from "react";
 import {
   Card,
   CardBody,
   CardFooter,
   Typography,
   Button,
-  Rating,
-  CardHeader, // Import CardHeader
 } from "@material-tailwind/react";
-import { useContext } from "react";
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../firebase'; // Import db from firebase.js
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../context/firebase";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-
-import context from '../../context/context'; // Corrected context import path
+import context from "../../context/context";
 
 const Products = () => {
-  const [products, setProducts] = useState([]); // Define state for products
-  const { cart, setCart } = useContext(context); // Keep cart and setCart from context if needed
+  const [products, setProducts] = useState([]);
+  const { cart, setCart } = useContext(context);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const productsCollection = collection(db, 'products');
+      const productsCollection = collection(db, "products");
       const productSnapshot = await getDocs(productsCollection);
-      const productsList = productSnapshot.docs.map(doc => ({
-        id: doc.id, // Get the document ID as the product ID
-        ...doc.data()
+      const productsList = productSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
       }));
-      setProducts(productsList); // Set the products state with fetched data
+      setProducts(productsList);
     };
     fetchProducts();
-  }, []); // Empty dependency array means this effect runs once on mount
-
-  const navigate = useNavigate();
+  }, []);
 
   return (
-    <div className="fixed top-0 left-0 w-full h-screen -z-10 bg-cover bg-center"
-      style={{
-        backgroundImage: "url('logo.png')",
-      }}
-    >
-      <h1 className="flex flex-col content-center items-center text-3xl p-3 text-blue-500">
-        Our Protein
-      </h1>
-      <div className="w-full max-w-6xl mx-auto flex flex-wrap justify-center gap-6 px-6">
-        {products.map(
-          ({ id, price, description, image, name, rating }, index) => (
+    <div className="min-h-screen bg-gradient-to-br from-[#181c2b] via-[#232946] to-[#0f172a] text-gray-100 font-sans relative overflow-hidden pt-32">
+      {/* Decorative gradient overlays */}
+      <div className="pointer-events-none absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-br from-[#00c6fb]/30 to-[#005bea]/10 rounded-full blur-3xl z-0" />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 bg-gradient-to-tr from-[#ffb86b]/30 to-[#ff6bcb]/10 rounded-full blur-3xl z-0" />
+      <div className="container mx-auto px-4 py-10 z-10 relative">
+        <h1 className="text-4xl font-extrabold text-center mb-10 text-transparent bg-clip-text bg-gradient-to-r from-[#00c6fb] to-[#005bea] drop-shadow-lg">
+          Our Protein Products
+        </h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+          {products.map(({ id, price, description, image, name }) => (
             <Card
-              className="w-64 bg-white/80 backdrop-blur-md shadow-md"
-              key={id} // Use product id as key
+              key={id}
+              className="overflow-hidden shadow-2xl border border-white/10 bg-gradient-to-br from-[#232946]/80 to-[#181c2b]/80 text-white rounded-2xl backdrop-blur-xl hover:scale-105 transition-transform"
             >
-              {/* Image placed directly in CardBody or adjust CardHeader usage */}
+              <div className="relative h-56 bg-white/10 flex items-center justify-center">
                 <img
-                  alt="Product"
+                  alt={name}
                   src={image}
-                  className="h-full w-full object-contain rounded-t-md"
+                  className="h-full w-full object-contain p-4 rounded-xl"
+                  loading="lazy"
                 />
-              <CardBody>
-                <div className="mb-2 flex flex-col items-start justify-between">
-                  <Typography color="blue-gray" className="font-medium text-lg">
-                    {name}
-                  </Typography>
-                  <Typography color="blue-gray" className="font-medium">
-                    ${price}
-                  </Typography>
+                <div className="absolute top-3 right-3 bg-gradient-to-r from-[#00c6fb] to-[#005bea] text-white px-4 py-1 rounded-full text-base font-bold shadow-lg border border-white/10">
+                  ${price}
                 </div>
-                <Typography variant="small" color="gray" className="mb-2">
-                  {description.slice(0, 50)}...
-                  {description.length > 50 && "..."} {/* Add ellipsis only if description is longer */}
+              </div>
+              <CardBody className="p-6">
+                <Typography
+                  variant="h5"
+                  className="font-bold mb-2 text-[#00c6fb]"
+                >
+                  {name}
                 </Typography>
-                {/* Commenting out rating display as data does not contain rating field */}
-                {/* <div className="flex items-center gap-2">
-                  {rating?.toFixed(1)}
-                  <Rating value={Math.round(rating)} readonly />
-                </div> */}
-                <Typography variant="small" color="gray">
-                  Based on 134 Reviews
+                <Typography
+                  variant="paragraph"
+                  className="mb-4 text-sm text-gray-200"
+                >
+                  {description}
                 </Typography>
               </CardBody>
-              <CardFooter className="pt-0 flex flex-col gap-2">
+              <CardFooter className="pt-0 px-6 pb-6 flex flex-col gap-3">
                 <Button
                   onClick={() => navigate(`/products/${id}`)}
-                  color="blue"
-                  className="w-full"
+                  className="w-full py-2 text-base bg-gradient-to-r from-[#00c6fb] to-[#005bea] text-white font-bold shadow-md hover:scale-105 transition-transform"
                 >
-                  Details
+                  View Details
                 </Button>
                 <Button
                   onClick={() => {
@@ -118,14 +108,14 @@ const Products = () => {
                       position: "top-end",
                     });
                   }}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  className="w-full py-2 font-semibold bg-gradient-to-r from-[#ffb86b] to-[#ff6bcb] text-white shadow-md hover:scale-105 transition-transform"
                 >
                   Add to Cart
                 </Button>
               </CardFooter>
             </Card>
-          )
-        )}
+          ))}
+        </div>
       </div>
     </div>
   );

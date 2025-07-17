@@ -1,6 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import context from "../../context/context";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../../context/firebase";
 import {
   Card,
   CardHeader,
@@ -13,8 +15,6 @@ import {
 } from "@material-tailwind/react";
 import Swal from "sweetalert2";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from "../../firebase"; // Assuming firebase.js is in the parent directory of context
 
 const Login = () => {
   const { setLogged, setUserData } = useContext(context);
@@ -26,7 +26,11 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
 
       // Fetch user data from Firestore
@@ -35,7 +39,7 @@ const Login = () => {
 
       if (userDocSnap.exists()) {
         const userData = { id: userDocSnap.id, ...userDocSnap.data() };
-        localStorage.setItem("userId", user.uid); // Use UID as userId
+        localStorage.setItem("userId", user.uid);
         setLogged(true);
         setUserData(userData);
 
@@ -44,8 +48,7 @@ const Login = () => {
         } else {
           navigate("/");
         }
-      }
-      else {
+      } else {
         navigate("/");
       }
     } catch (error) {
@@ -53,51 +56,53 @@ const Login = () => {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: error.message, // Display Firebase error message
+        text: error.message,
       });
-      console.error("Firebase Auth Error:", error); // Log Firebase error
+      console.error("Firebase Auth Error:", error);
 
       let errorMessage = "An error occurred during login.";
       switch (error.code) {
-        case 'auth/invalid-email':
-        case 'auth/user-disabled':
-        case 'auth/user-not-found':
-        case 'auth/wrong-password':
+        case "auth/invalid-email":
+        case "auth/user-disabled":
+        case "auth/user-not-found":
+        case "auth/wrong-password":
           errorMessage = "Invalid email or password.";
           break;
         default:
           errorMessage = error.message;
           break;
-      });
+      }
     }
   };
 
   return (
-    <div className="relative h-full overflow-hidden">
-      <div
-        className="fixed top-0 left-0 w-full h-screen -z-10 bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "url('https://img.pikbest.com/wp/202346/dumbbell-shining-metal-in-3d-rendering_9729554.jpg!w700wp')",
-        }}
-      ></div>
-      <Card className="w-96 flex flex-col mx-auto justify-center mt-32">
+    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#181c2b] via-[#232946] to-[#0f172a] text-gray-100 font-sans overflow-hidden">
+      {/* Decorative gradient overlays */}
+      <div className="pointer-events-none absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-br from-[#00c6fb]/30 to-[#005bea]/10 rounded-full blur-3xl z-0" />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 bg-gradient-to-tr from-[#ffb86b]/30 to-[#ff6bcb]/10 rounded-full blur-3xl z-0" />
+      <Card className="w-full max-w-md mx-auto z-10 bg-gradient-to-br from-[#232946]/80 to-[#181c2b]/80 border border-white/10 shadow-2xl rounded-3xl backdrop-blur-xl">
         <CardHeader
           variant="gradient"
           color="blue"
-          className="mb-4 grid h-28 place-items-center"
+          className="mb-4 grid h-28 place-items-center rounded-t-3xl bg-gradient-to-r from-[#00c6fb] to-[#005bea]"
         >
-          <Typography variant="h3" color="white">
+          <Typography
+            variant="h3"
+            className="font-extrabold text-white drop-shadow-lg"
+          >
             Sign In
           </Typography>
         </CardHeader>
         <CardBody>
-          <form onSubmit={handleLogin} className="flex flex-col gap-4">
+          <form onSubmit={handleLogin} className="flex flex-col gap-5">
             <Input
               label="Email"
               size="lg"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="text-white"
+              labelProps={{ className: "text-[#00c6fb] font-semibold" }}
+              crossOrigin="anonymous"
             />
             <Input
               label="Password"
@@ -105,15 +110,21 @@ const Login = () => {
               size="lg"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="text-white"
+              labelProps={{ className: "text-[#00c6fb] font-semibold" }}
+              crossOrigin="anonymous"
             />
             <Checkbox
               label="Show Password"
               checked={showPassword}
               onChange={() => setShowPassword(!showPassword)}
+              className="text-[#00c6fb]"
+              labelProps={{ className: "text-[#00c6fb] font-semibold" }}
+              crossOrigin="anonymous"
             />
             <Button
               variant="gradient"
-              color="blue"
+              className="bg-gradient-to-r from-[#00c6fb] to-[#005bea] text-white font-bold shadow-lg hover:scale-105 transition-transform text-lg py-3"
               fullWidth
               type="submit"
               disabled={!email || !password}
@@ -123,14 +134,16 @@ const Login = () => {
           </form>
         </CardBody>
         <CardFooter className="pt-0">
-          <Typography variant="small" className="mt-6 flex justify-center">
+          <Typography
+            variant="small"
+            className="mt-6 flex justify-center text-gray-200"
+          >
             Don't have an account?
             <Typography
               as={Link}
               to="/sign-up"
               variant="small"
-              color="blue-gray"
-              className="ml-1 font-bold"
+              className="ml-1 font-bold text-[#00c6fb] hover:text-[#ffb86b] transition"
             >
               Sign Up
             </Typography>

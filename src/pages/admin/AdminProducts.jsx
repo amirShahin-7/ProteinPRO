@@ -7,13 +7,12 @@ import {
   CardTitle,
   Typography,
   Button,
-  CardFooter,
 } from "@material-tailwind/react";
 import { FiTrash2, FiEdit, FiPlus } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
-import { db } from '../../firebase'; // Import db from firebase.js
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { db } from "../../context/firebase";
 
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
@@ -22,11 +21,11 @@ const AdminProducts = () => {
 
   const fetchProducts = async () => {
     setLoading(true);
-    const productsCollection = collection(db, 'products');
+    const productsCollection = collection(db, "products");
     const productSnapshot = await getDocs(productsCollection);
-    const productsList = productSnapshot.docs.map(doc => ({
+    const productsList = productSnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
     }));
     setProducts(productsList);
     setLoading(false);
@@ -42,11 +41,10 @@ const AdminProducts = () => {
       confirmButtonText: "Yes, delete",
     }).then((result) => {
       if (result.isConfirmed) {
-        const productDoc = doc(db, 'products', id);
-        deleteDoc(productDoc)
-        .then(() => {
+        const productDoc = doc(db, "products", id);
+        deleteDoc(productDoc).then(() => {
           // Remove the deleted product from the local state
-          setProducts(products.filter(product => product.id !== id));
+          setProducts(products.filter((product) => product.id !== id));
           fetchProducts();
           Swal.fire("Deleted!", "Product has been deleted.", "success");
         });
@@ -60,7 +58,7 @@ const AdminProducts = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-[#181c2b] via-[#232946] to-[#0f172a] text-gray-100">
         <Typography variant="h5" color="blue-gray">
           Loading Products...
         </Typography>
@@ -69,50 +67,61 @@ const AdminProducts = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-[#181c2b] via-[#232946] to-[#0f172a] p-8 font-sans text-gray-100 relative overflow-hidden pt-32">
+      {/* Decorative overlays */}
+      <div className="pointer-events-none absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-br from-[#00c6fb]/30 to-[#005bea]/10 rounded-full blur-3xl z-0" />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 bg-gradient-to-tr from-[#ffb86b]/30 to-[#ff6bcb]/10 rounded-full blur-3xl z-0" />
+      <div className="flex justify-center mb-8 z-10 relative">
         <Button
           onClick={() => navigate("/admin/add-product")}
-          className="flex items-center gap-2 bg-green-600"
+          className="flex items-center gap-2 bg-gradient-to-r from-[#00c6fb] to-[#005bea] text-white font-bold px-6 py-3 rounded-xl shadow-md hover:scale-105 transition-transform"
         >
           <FiPlus />
           Add Product
         </Button>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 z-10 relative">
         {products.map(({ id, name, image, price, rating }) => (
-          <Card key={id} className="shadow-md">
-            <CardHeader floated={false} className="h-56">
+          <Card
+            key={id}
+            className="shadow-2xl border border-white/10 bg-gradient-to-br from-[#232946]/80 to-[#181c2b]/80 text-white rounded-2xl backdrop-blur-xl hover:scale-105 transition-transform"
+          >
+            <CardHeader
+              floated={false}
+              className="h-56 bg-white/10 flex items-center justify-center"
+            >
               <img
                 src={image}
                 alt={name}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-contain p-4 rounded-xl"
+                loading="lazy"
               />
-            </CardHeader> {/* Added closing tag */}
+            </CardHeader>
             <CardBody className="text-center">
-              <Typography variant="h6" className="mb-1">
+              <Typography
+                variant="h6"
+                className="mb-1 text-[#00c6fb] font-bold"
+              >
                 {name}
               </Typography>
-              <Typography color="blue" className="mb-2 font-bold">
+              <Typography className="mb-2 font-bold text-[#ffb86b]">
                 ${price}
               </Typography>
-              <Typography color="gray" className="text-sm">
+              <Typography className="text-sm text-gray-200">
                 Rating: {rating}
               </Typography>
             </CardBody>
             <CardFooter className="flex justify-between px-6 pb-4">
               <Button
-                color="red"
+                className="flex items-center gap-1 bg-gradient-to-r from-[#ffb86b] to-[#ff6bcb] text-white font-bold shadow-md hover:scale-105 transition-transform"
                 size="sm"
                 onClick={() => deleteProduct(id)}
-                className="flex items-center gap-1"
               >
                 <FiTrash2 />
                 Delete
               </Button>
               <Button
-                className="flex items-center gap-1"
-                color="blue"
+                className="flex items-center gap-1 bg-gradient-to-r from-[#00c6fb] to-[#005bea] text-white font-bold shadow-md hover:scale-105 transition-transform"
                 onClick={() => navigate(`/admin/add-product/${id}`)}
               >
                 <FiEdit />
