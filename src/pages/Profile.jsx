@@ -10,7 +10,12 @@ import {
 } from "@material-tailwind/react";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db, auth } from "../context/firebase";
-import { updatePassword, deleteUser } from "firebase/auth";
+import {
+  updatePassword,
+  deleteUser,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+} from "firebase/auth";
 import Swal from "sweetalert2";
 import context from "../context/context";
 const imgbbKey = "f6963f799718a7d9a4061360621415d0";
@@ -101,19 +106,39 @@ const Profile = () => {
         "New password must be at least 6 characters.",
         "error"
       );
-    } else if (newPassword.length < 6) {
-      Swal.fire("Error", "New password must be at least 6 characters", "error");
-    } else if (newPassword !== confirmPassword) {
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
       Swal.fire("Error", "New passwords do not match.", "error");
-    } else {
-      try {
-        await updatePassword(currentUser, newPassword);
-        Swal.fire("Updated", "Password changed successfully.", "success");
-        setCurrentPassword("");
-        setNewPassword("");
-        setConfirmPassword("");
-      } catch (error) {
-        console.error("Error changing password:", error);
+      return;
+    }
+
+    try {
+      // Re-authenticate user
+      const credential = EmailAuthProvider.credential(
+        currentUser.email,
+        currentPassword
+      );
+      await reauthenticateWithCredential(currentUser, credential);
+
+      // Update password
+      await updatePassword(currentUser, newPassword);
+      Swal.fire("Updated", "Password changed successfully.", "success");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      console.error("Error changing password:", error);
+      if (error.code === "auth/wrong-password") {
+        Swal.fire("Error", "Incorrect current password.", "error");
+      } else if (error.code === "auth/requires-recent-login") {
+        Swal.fire(
+          "Error",
+          "Please log in again to change your password.",
+          "error"
+        );
+      } else {
         Swal.fire(
           "Error",
           error.message || "Failed to change password.",

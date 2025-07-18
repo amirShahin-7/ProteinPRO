@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { collection, doc, getDoc, addDoc, updateDoc } from "firebase/firestore";
 import Swal from "sweetalert2";
@@ -49,10 +49,9 @@ const AddProduct = () => {
 
       fetchProduct();
     } else {
-      // إذا لم نكن في وضع التعديل، لا نحتاج لجلب بيانات
       setLoading(false);
     }
-  }, [id, isEditing]); // إعادة جلب البيانات إذا تغير معرّف المنتج أو حالة التعديل
+  }, [id, isEditing]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -64,20 +63,17 @@ const AddProduct = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // تفعيل حالة التحميل أثناء عملية الحفظ
+    setLoading(true);
 
     try {
       if (isEditing) {
-        // تحديث المنتج الموجود في Firestore
         const productRef = doc(db, "products", id);
         await updateDoc(productRef, productData);
         Swal.fire("Success", "Product updated successfully!", "success");
       } else {
-        // إضافة منتج جديد إلى Firestore
         const productsCollectionRef = collection(db, "products");
         await addDoc(productsCollectionRef, productData);
         Swal.fire("Success", "Product added successfully!", "success");
-        // مسح حقول النموذج بعد الإضافة الناجحة
         setProductData({
           name: "",
           description: "",
@@ -85,12 +81,12 @@ const AddProduct = () => {
           image: "",
         });
       }
-      // navigate('/admin/products'); // يمكن إلغاء تعليق هذا السطر لإعادة التوجيه بعد الحفظ
+      navigate("/admin/products");
     } catch (err) {
       console.error("Error saving product:", err);
       Swal.fire("Error", "Failed to save product.", "error");
     } finally {
-      setLoading(false); // تعطيل حالة التحميل بعد انتهاء العملية
+      setLoading(false);
     }
   };
 
@@ -116,7 +112,6 @@ const AddProduct = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#181c2b] via-[#232946] to-[#0f172a] flex items-center justify-center p-4 font-sans relative overflow-hidden pt-32 text-gray-100">
-      {/* Decorative overlays */}
       <div className="pointer-events-none absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-br from-[#00c6fb]/30 to-[#005bea]/10 rounded-full blur-3xl z-0" />
       <div className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 bg-gradient-to-tr from-[#ffb86b]/30 to-[#ff6bcb]/10 rounded-full blur-3xl z-0" />
       <Card className="w-full max-w-2xl p-8 shadow-2xl border border-white/10 bg-gradient-to-br from-[#232946]/80 to-[#181c2b]/80 rounded-3xl backdrop-blur-xl z-10">
@@ -176,12 +171,11 @@ const AddProduct = () => {
               labelProps={{ className: "text-[#00c6fb] font-semibold" }}
               crossOrigin="anonymous"
             />
-            {/* يمكنك إضافة حقل لرفع الصور هنا إذا كنت تستخدم Firebase Storage */}
             <Button
               className="bg-gradient-to-r from-[#00c6fb] to-[#005bea] text-white font-bold shadow-md hover:scale-105 transition-transform text-lg py-3"
               fullWidth
               type="submit"
-              disabled={loading} // تعطيل الزر أثناء التحميل
+              disabled={loading}
             >
               {isEditing ? "Update Product" : "Add Product"}
             </Button>

@@ -30,6 +30,7 @@ const AdminProducts = () => {
     setProducts(productsList);
     setLoading(false);
   };
+
   const deleteProduct = (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -43,7 +44,6 @@ const AdminProducts = () => {
       if (result.isConfirmed) {
         const productDoc = doc(db, "products", id);
         deleteDoc(productDoc).then(() => {
-          // Remove the deleted product from the local state
           setProducts(products.filter((product) => product.id !== id));
           fetchProducts();
           Swal.fire("Deleted!", "Product has been deleted.", "success");
@@ -67,8 +67,7 @@ const AdminProducts = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#181c2b] via-[#232946] to-[#0f172a] p-8 font-sans text-gray-100 relative overflow-hidden pt-32">
-      {/* Decorative overlays */}
+    <div className="min-h-screen rounded-xl bg-gradient-to-br from-[#181c2b] via-[#232946] to-[#0f172a] p-8 font-sans text-gray-100 relative overflow-hidden pt-32">
       <div className="pointer-events-none absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-br from-[#00c6fb]/30 to-[#005bea]/10 rounded-full blur-3xl z-0" />
       <div className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 bg-gradient-to-tr from-[#ffb86b]/30 to-[#ff6bcb]/10 rounded-full blur-3xl z-0" />
       <div className="flex justify-center mb-8 z-10 relative">
@@ -106,9 +105,6 @@ const AdminProducts = () => {
               </Typography>
               <Typography className="mb-2 font-bold text-[#ffb86b]">
                 ${price}
-              </Typography>
-              <Typography className="text-sm text-gray-200">
-                Rating: {rating}
               </Typography>
             </CardBody>
             <CardFooter className="flex justify-between px-6 pb-4">

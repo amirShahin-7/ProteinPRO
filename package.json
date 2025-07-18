@@ -24,8 +24,8 @@
     "vite": "^6.3.5"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.4",
     "@material-tailwind/react": "^2.1.10",
-    "axios": "^1.10.0",
     "firebase": "^11.10.0",
     "firebase-admin": "^13.4.0",
     "heroicons": "^2.2.0",

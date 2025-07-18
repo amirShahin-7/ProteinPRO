@@ -12,7 +12,7 @@ import {
 import { db } from "../../context/firebase";
 
 const Home = () => {
-  const { products, setProducts } = useContext(context);
+  const { products, setProducts, logged, currentUser } = useContext(context);
   const navigate = useNavigate();
   const featured = products ? products.slice(0, 3) : [];
 
@@ -27,6 +27,7 @@ const Home = () => {
     };
     fetchProducts();
   }, [setProducts]);
+
   return (
     <div className="relative w-full min-h-screen bg-gradient-to-br from-[#181c2b] via-[#232946] to-[#0f172a] text-gray-100 font-sans">
       {/* Hero Section */}
@@ -157,10 +158,12 @@ const Home = () => {
           Join thousands of athletes and start your journey today.
         </Typography>
         <Button
-          onClick={() => navigate("/sign-up")}
+          onClick={() =>
+            currentUser || logged ? navigate("/products") : navigate("/sign-up")
+          }
           className="mt-4 bg-gradient-to-r from-[#00c6fb] to-[#005bea] text-white font-bold px-8 py-3 text-lg shadow-lg hover:scale-105 transition-transform"
         >
-          Get Started
+          {currentUser || logged ? "Go to Products" : "Get Started"}
         </Button>
       </section>
     </div>

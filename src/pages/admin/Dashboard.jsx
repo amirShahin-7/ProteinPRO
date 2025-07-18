@@ -1,16 +1,22 @@
 import { useContext, useEffect, useState } from "react";
 import context from "../../context/context";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../context/firebase";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const url = import.meta.env.VITE_DB_USERS;
   const { products, userData } = useContext(context);
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    axios.get(url).then((res) => setUsers(res.data));
+    const fetchUsers = async () => {
+      const querySnapshot = await getDocs(collection(db, "users"));
+      setUsers(
+        querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+      );
+    };
+    fetchUsers();
   }, []);
 
   const totalUsers = users.length;
@@ -20,8 +26,7 @@ const Dashboard = () => {
   const latestProducts = products.slice(-4);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#181c2b] via-[#232946] to-[#0f172a] p-8 font-sans text-gray-100 relative overflow-hidden pt-32">
-      {/* Decorative overlays */}
+    <div className="min-h-screen rounded-xl bg-gradient-to-br from-[#181c2b] via-[#232946] to-[#0f172a] p-8 font-sans text-gray-100 relative overflow-hidden pt-32 w-full">
       <div className="pointer-events-none absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-br from-[#00c6fb]/30 to-[#005bea]/10 rounded-full blur-3xl z-0" />
       <div className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 bg-gradient-to-tr from-[#ffb86b]/30 to-[#ff6bcb]/10 rounded-full blur-3xl z-0" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 z-10 relative">
