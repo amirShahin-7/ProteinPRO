@@ -11,11 +11,8 @@ import {
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db, auth } from "../context/firebase";
 import { updatePassword, deleteUser } from "firebase/auth";
-
 import Swal from "sweetalert2";
 import context from "../context/context";
-
-const urlUser = import.meta.env.VITE_DB_USERS;
 const imgbbKey = "f6963f799718a7d9a4061360621415d0";
 
 const Profile = () => {
@@ -37,7 +34,6 @@ const Profile = () => {
     }
   }, [userData]);
 
-  // Fetch user data from Firestore when the component mounts or currentUser changes
   useEffect(() => {
     const fetchUserData = async () => {
       if (currentUser) {
@@ -51,7 +47,6 @@ const Profile = () => {
                 "https://cdn-icons-png.flaticon.com/512/3177/3177440.png"
             );
           } else {
-            // Handle case where user document doesn't exist (shouldn't happen if signup creates it)
             console.error(
               "User document not found in Firestore for UID:",
               currentUser.uid
@@ -66,15 +61,13 @@ const Profile = () => {
           setLoading(false);
         }
       } else {
-        // User is not logged in, redirect to login
-        // navigate('/login'); // Assuming you have navigate available
         setLoading(false);
-        setUserData(null); // Ensure userData is null if not logged in
+        setUserData(null);
       }
     };
 
     fetchUserData();
-  }, [currentUser, setUserData]); // Depend on currentUser and setUserData
+  }, [currentUser, setUserData]);
 
   const handleSave = async () => {
     if (!currentUser || !userData) return;
@@ -84,7 +77,7 @@ const Profile = () => {
       await updateDoc(userDocRef, { ...userData, image });
       Swal.fire("Saved!", "Your profile has been updated.", "success");
       setIsEditing(false);
-      setUserData({ ...userData, image }); // Update context state
+      setUserData({ ...userData, image });
     } catch (error) {
       console.error("Error updating profile:", error);
       Swal.fire("Error", "Failed to update profile.", "error");
@@ -101,10 +94,6 @@ const Profile = () => {
       Swal.fire("Error", "Please fill in all password fields.", "error");
       return;
     }
-
-    // Re-authenticate the user before changing password (optional but recommended)
-    // This requires implementing re-authentication flow, which is more complex.
-    // For simplicity here, we'll just check the new password validity and perform update.
 
     if (newPassword.length < 6) {
       Swal.fire(
@@ -123,7 +112,6 @@ const Profile = () => {
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
-        // Note: We don't store password in Firestore userData for security reasons.
       } catch (error) {
         console.error("Error changing password:", error);
         Swal.fire(
@@ -148,16 +136,11 @@ const Profile = () => {
       showCancelButton: true,
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
-      // Make the callback async
       if (result.isConfirmed) {
         try {
-          // Delete user document from Firestore first
           const userDocRef = doc(db, "users", currentUser.uid);
           await deleteDoc(userDocRef);
-
-          // Delete user from Firebase Authentication
           await deleteUser(currentUser);
-
           localStorage.clear();
           Swal.fire(
             "Deleted",
@@ -165,8 +148,6 @@ const Profile = () => {
             "success"
           ).then(() => {
             location.href = "/login";
-            // Or use navigate if available and appropriate
-            // navigate('/login');
           });
         } catch (error) {
           console.error("Error deleting account:", error);
@@ -212,7 +193,6 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#181c2b] via-[#232946] to-[#0f172a] flex items-center justify-center p-4 font-sans relative overflow-hidden pt-32 text-gray-100">
-      {/* Decorative gradient overlays */}
       <div className="pointer-events-none absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-br from-[#00c6fb]/30 to-[#005bea]/10 rounded-full blur-3xl z-0" />
       <div className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 bg-gradient-to-tr from-[#ffb86b]/30 to-[#ff6bcb]/10 rounded-full blur-3xl z-0" />
       <Card className="w-full max-w-2xl p-8 shadow-2xl border border-white/10 bg-gradient-to-br from-[#232946]/80 to-[#181c2b]/80 rounded-3xl backdrop-blur-xl z-10">
@@ -222,12 +202,13 @@ const Profile = () => {
               image || "https://cdn-icons-png.flaticon.com/512/3177/3177440.png"
             }
             size="lg"
-            className="border-4 border-[#00c6fb] shadow-lg"
+            className="border-4 border-[#181d4d] shadow-lg"
           />
           {isEditing && (
             <Input
               type="file"
               accept="image/*"
+              className="text-[#181d4d] font-semibold"
               onChange={(e) => handleUpload(e.target.files[0])}
             />
           )}
@@ -241,7 +222,7 @@ const Profile = () => {
             onChange={(e) =>
               setUserData({ ...userData, username: e.target.value })
             }
-            className="text-white"
+            className="text-[#181d4d] font-semibold"
             labelProps={{ className: "text-[#00c6fb] font-semibold" }}
             crossOrigin="anonymous"
           />
@@ -249,7 +230,7 @@ const Profile = () => {
             label="Email"
             value={userData.email}
             disabled
-            className="text-white"
+            className="text-[#181d4d] font-semibold"
             labelProps={{ className: "text-[#00c6fb] font-semibold" }}
             crossOrigin="anonymous"
           />
@@ -257,10 +238,10 @@ const Profile = () => {
             label="Phone Number"
             value={userData.phone}
             disabled={!isEditing}
-            onChange={(
-              e // Use event.target.value
-            ) => setUserData({ ...userData, phone: e.target.value })}
-            className="text-white"
+            onChange={(e) =>
+              setUserData({ ...userData, phone: e.target.value })
+            }
+            className="text-[#181d4d] font-semibold"
             labelProps={{ className: "text-[#00c6fb] font-semibold" }}
             crossOrigin="anonymous"
           />
@@ -269,8 +250,8 @@ const Profile = () => {
               label="Gender"
               value={userData.gender}
               onChange={(val) => setUserData({ ...userData, gender: val })}
-              className="text-white"
-              labelProps={{ className: "text-[#00c6fb] font-semibold" }}
+              className="text-[#181d4d]"
+              labelProps={{ className: "text-[#181d4d] font-semibold" }}
               crossOrigin="anonymous"
             >
               <Option value="male">Male</Option>
@@ -281,7 +262,7 @@ const Profile = () => {
               label="Gender"
               value={userData.gender}
               disabled
-              className="text-white"
+              className="text-[#181d4d] font-semibold"
               labelProps={{ className: "text-[#00c6fb] font-semibold" }}
               crossOrigin="anonymous"
             />
@@ -313,7 +294,7 @@ const Profile = () => {
             type="password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
-            className="text-white"
+            className="text-[#181d4d] font-semibold"
             labelProps={{ className: "text-[#00c6fb] font-semibold" }}
             crossOrigin="anonymous"
           />
@@ -322,7 +303,7 @@ const Profile = () => {
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            className="text-white"
+            className="text-[#181d4d] font-semibold"
             labelProps={{ className: "text-[#00c6fb] font-semibold" }}
             crossOrigin="anonymous"
           />
@@ -331,7 +312,7 @@ const Profile = () => {
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="text-white"
+            className="text-[#181d4d] font-semibold"
             labelProps={{ className: "text-[#00c6fb] font-semibold" }}
             crossOrigin="anonymous"
           />

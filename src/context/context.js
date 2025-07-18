@@ -6,7 +6,7 @@ const context = createContext({
   setLogged: () => {},
   cart: [],
   setCart: () => {},
-  userData: null,
+  userData: {},
   setUserData: () => {},
 });
 

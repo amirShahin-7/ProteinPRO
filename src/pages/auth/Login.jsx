@@ -33,7 +33,6 @@ const Login = () => {
       );
       const user = userCredential.user;
 
-      // Fetch user data from Firestore
       const userDocRef = doc(db, "users", user.uid);
       const userDocSnap = await getDoc(userDocRef);
 
@@ -77,7 +76,6 @@ const Login = () => {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#181c2b] via-[#232946] to-[#0f172a] text-gray-100 font-sans overflow-hidden">
-      {/* Decorative gradient overlays */}
       <div className="pointer-events-none absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-br from-[#00c6fb]/30 to-[#005bea]/10 rounded-full blur-3xl z-0" />
       <div className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 bg-gradient-to-tr from-[#ffb86b]/30 to-[#ff6bcb]/10 rounded-full blur-3xl z-0" />
       <Card className="w-full max-w-md mx-auto z-10 bg-gradient-to-br from-[#232946]/80 to-[#181c2b]/80 border border-white/10 shadow-2xl rounded-3xl backdrop-blur-xl">

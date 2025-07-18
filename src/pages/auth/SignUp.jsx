@@ -10,7 +10,6 @@ import {
 } from "@material-tailwind/react";
 import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import axios from "axios";
 import context from "../../context/context";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { collection, doc, setDoc } from "firebase/firestore";
@@ -39,7 +38,6 @@ const SignUp = () => {
   };
 
   const handleSignUp = async (e) => {
-    // Make the handler async
     e.preventDefault();
     setFormSubmitted(true);
     handleValidation();
@@ -56,7 +54,7 @@ const SignUp = () => {
         title: "Validation Error",
         text: "Please fill in all fields correctly!",
       });
-      return; // Stop execution if validation fails
+      return;
     }
 
     try {
@@ -72,6 +70,7 @@ const SignUp = () => {
         gender,
         phone,
         role: "user",
+        email,
       });
 
       Swal.fire({
@@ -79,9 +78,8 @@ const SignUp = () => {
         title: "Account Created",
         text: "You can now log in!",
       });
-      navigate("/Login"); // Navigate to login page after successful signup
+      navigate("/Login");
     } catch (error) {
-      console.error("Error signing up:", error); // Log error
       let errorMessage = "An error occurred during signup.";
       switch (error.code) {
         case "auth/email-already-in-use":
@@ -120,7 +118,6 @@ const SignUp = () => {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#181c2b] via-[#232946] to-[#0f172a] text-gray-100 font-sans overflow-hidden">
-      {/* Decorative gradient overlays */}
       <div className="pointer-events-none absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-br from-[#00c6fb]/30 to-[#005bea]/10 rounded-full blur-3xl z-0" />
       <div className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 bg-gradient-to-tr from-[#ffb86b]/30 to-[#ff6bcb]/10 rounded-full blur-3xl z-0" />
       <Card className="w-full max-w-md mx-auto z-10 bg-gradient-to-br from-[#232946]/80 to-[#181c2b]/80 border border-white/10 shadow-2xl rounded-3xl backdrop-blur-xl">
